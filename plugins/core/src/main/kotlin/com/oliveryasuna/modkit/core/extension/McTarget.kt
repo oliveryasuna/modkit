@@ -11,7 +11,7 @@ public abstract class McTarget @Inject constructor(
     public val minecraftVersion: String
         get() = name
 
-    public abstract val loaders: SetProperty<String>  // "fabric", "neoforge", "forge", "quilt"
+    public abstract val loaders: SetProperty<McLoader>
     public abstract val enabled: Property<Boolean>
 
 }

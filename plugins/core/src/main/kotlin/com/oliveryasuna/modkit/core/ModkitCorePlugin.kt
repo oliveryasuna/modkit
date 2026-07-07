@@ -58,20 +58,16 @@ public abstract class ModkitCorePlugin : Plugin<Project> {
             val modId = extension.modId
             val version = extension.version
             val toolchain = extension.jvm.toolchain
-
-            val targetsReport = project.provider {
-                extension.targets.map { target -> "${target.minecraftVersion} -> ${target.loaders.get()}" }
+            val targetsList = extension.targets.map { target ->
+                "${target.minecraftVersion} -> ${target.loaders.get()}"
             }
-
-            // Force to a stored val the task can serialize.
-            val targetsList = targetsReport
 
             task.doLast {
                 println("modId:     ${modId.orNull}")
                 println("version:   ${version.orNull}")
                 println("toolchain: ${toolchain.orNull}")
                 println("targets:")
-                targetsList.get().forEach { println("  $it") }
+                targetsList.forEach { println("  $it") }
             }
         }
     }
