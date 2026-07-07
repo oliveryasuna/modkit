@@ -1,8 +1,11 @@
 package com.oliveryasuna.modkit.core
 
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
+import com.oliveryasuna.modkit.core.toolchain.JavaToolchainResolver
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.jvm.toolchain.JavaLanguageVersion
 
 public abstract class ModkitCorePlugin : Plugin<Project> {
 
@@ -24,6 +27,21 @@ public abstract class ModkitCorePlugin : Plugin<Project> {
             target.enabled.convention(true)
         }
 
+        extension.jvm.toolchain.convention(
+            project.provider {
+                JavaToolchainResolver.resolveForTargets(
+                    extension.targets.map { it.minecraftVersion }
+                )
+            }
+        )
+
+        project.pluginManager.withPlugin("java-base") {
+            val java = project.extensions.getByType(JavaPluginExtension::class.java)
+            java.toolchain.languageVersion.set(
+                extension.jvm.toolchain.map { JavaLanguageVersion.of(it) }
+            )
+        }
+
         registerDiagnostics(project, extension)
     }
 
@@ -40,16 +58,20 @@ public abstract class ModkitCorePlugin : Plugin<Project> {
             val modId = extension.modId
             val version = extension.version
             val toolchain = extension.jvm.toolchain
-            val targets = project.provider {
+
+            val targetsReport = project.provider {
                 extension.targets.map { target -> "${target.minecraftVersion} -> ${target.loaders.get()}" }
             }
+
+            // Force to a stored val the task can serialize.
+            val targetsList = targetsReport
 
             task.doLast {
                 println("modId:     ${modId.orNull}")
                 println("version:   ${version.orNull}")
                 println("toolchain: ${toolchain.orNull}")
                 println("targets:")
-                targets.get().forEach { println("  $it") }
+                targetsList.get().forEach { println("  $it") }
             }
         }
     }
