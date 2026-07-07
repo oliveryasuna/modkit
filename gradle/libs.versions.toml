@@ -1,0 +1,29 @@
+[versions]
+
+# Toolchain
+java = "21"
+kotlin = "2.3.21"
+
+# Build / publishing plugins
+plugin-publish = "2.1.1"
+
+# Test
+junit = "6.1.1"
+
+
+[libraries]
+
+# Plugins
+kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+plugin-publish-plugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "plugin-publish" }
+
+# Test
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+
+
+[plugins]
+
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "plugin-publish" }
