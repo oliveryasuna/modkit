@@ -1,8 +1,6 @@
-package com.oliveryasuna.modkit.core.toolchain
+package com.oliveryasuna.modkit.common
 
-import com.oliveryasuna.modkit.common.SemVer
-
-internal object JavaToolchainResolver {
+public object JavaToolchainResolver {
 
     // Ordered floors; first matching lower bound wins. Boundaries per Minecraft
     // wiki.
@@ -14,7 +12,7 @@ internal object JavaToolchainResolver {
         SemVer(1, 12, 0) to 8
     )
 
-    fun minimumJdkFor(minecraftVersion: String): Int {
+    public fun minimumJdkFor(minecraftVersion: String): Int {
         val v = SemVer.parse(minecraftVersion)
 
         // Conservative fallback to 8 for very old versions.
@@ -23,7 +21,7 @@ internal object JavaToolchainResolver {
 
     // For a multi-loader target, one JVM compiles to all its loaders -> take
     // the max floor.
-    fun resolveForTargets(versions: Iterable<String>): Int =
+    public fun resolveForTargets(versions: Iterable<String>): Int =
         versions.maxOfOrNull(::minimumJdkFor) ?: 25
 
 }
