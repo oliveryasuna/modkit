@@ -1,7 +1,12 @@
 [versions]
 
 # Toolchain
+# `java` is the JDK used to *build* modkit. `java-target` is the bytecode level
+# emitted for the published artifacts — it must be <= the minimum JVM consumers
+# run Gradle on. Gradle 9 requires Java 17, so 17 is the lowest meaningful
+# floor.
 java = "21"
+java-target = "17"
 kotlin = "2.3.21"
 
 # Build / publishing plugins

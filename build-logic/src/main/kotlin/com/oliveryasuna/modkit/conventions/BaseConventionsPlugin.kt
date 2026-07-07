@@ -3,11 +3,10 @@ package com.oliveryasuna.modkit.conventions
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.testing.Test
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getByType
-import org.gradle.kotlin.dsl.named
+import org.gradle.kotlin.dsl.*
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
 /**
@@ -31,13 +30,27 @@ class BaseConventionsPlugin : Plugin<Project> {
 
         val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
         val javaVersion = libs.findVersion("java").get().requiredVersion.toInt()
+        val targetVersion = libs.findVersion("java-target").get().requiredVersion
 
-        // 3. Configure Kotlin toolchain.
+        // 3. Configure the toolchain and bytecode target.
+        //
+        // Build with `java` but emit `java-target` bytecode so the published
+        // artifacts load on the oldest Gradle JVM consumers use.
+        // -Xjdk-release` also pins the JDK API level so 21-only APIs can't leak
+        // in.
         //
 
         configure<KotlinJvmProjectExtension> {
             jvmToolchain(javaVersion)
             explicitApi()
+            compilerOptions {
+                jvmTarget.set(JvmTarget.fromTarget(targetVersion))
+                freeCompilerArgs.add("-Xjdk-release=$targetVersion")
+            }
+        }
+
+        tasks.withType<JavaCompile>().configureEach {
+            options.release.set(targetVersion.toInt())
         }
 
         // 4. Testing.
