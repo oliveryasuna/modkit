@@ -1,6 +1,6 @@
 package com.oliveryasuna.modkit.core
 
-import com.oliveryasuna.modkit.common.JavaToolchainResolver
+import com.oliveryasuna.modkit.common.toolchain.JavaToolchainResolver
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Plugin

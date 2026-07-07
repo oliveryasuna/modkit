@@ -1,4 +1,6 @@
-package com.oliveryasuna.modkit.common
+package com.oliveryasuna.modkit.common.toolchain
+
+import com.oliveryasuna.modkit.common.version.SemVer
 
 public object JavaToolchainResolver {
 
@@ -13,7 +15,7 @@ public object JavaToolchainResolver {
     )
 
     public fun minimumJdkFor(minecraftVersion: String): Int {
-        val v = SemVer.parse(minecraftVersion)
+        val v = SemVer.Companion.parse(minecraftVersion)
 
         // Conservative fallback to 8 for very old versions.
         return floors.firstOrNull { (floor, _) -> v >= floor }?.second ?: 8

@@ -1,4 +1,4 @@
-package com.oliveryasuna.modkit.common
+package com.oliveryasuna.modkit.common.version
 
 public data class SemVer(
     public val major: Int,
