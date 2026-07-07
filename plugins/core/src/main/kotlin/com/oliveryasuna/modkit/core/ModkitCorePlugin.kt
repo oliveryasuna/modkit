@@ -2,12 +2,13 @@ package com.oliveryasuna.modkit.core
 
 import com.oliveryasuna.modkit.common.JavaToolchainResolver
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.jvm.toolchain.JavaLanguageVersion
 
-public abstract class ModkitCorePlugin : Plugin<Project> {
+public class ModkitCorePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         val extension = project.extensions.create("modkit", ModkitExtension::class.java)
@@ -43,6 +44,7 @@ public abstract class ModkitCorePlugin : Plugin<Project> {
         }
 
         registerDiagnostics(project, extension)
+        registerValidation(project, extension)
     }
 
     private fun registerDiagnostics(
@@ -70,6 +72,49 @@ public abstract class ModkitCorePlugin : Plugin<Project> {
                 targetsList.forEach { println("  $it") }
             }
         }
+    }
+
+    private fun registerValidation(
+        project: Project,
+        extension: ModkitExtension
+    ) {
+        val validate = project.tasks.register("validateModkitModel") { task ->
+            task.group = "verification"
+            task.description = "Validates the resolved Modkit model (modId, targets, loaders)."
+
+            // Snapshot the model into plain, serializable values at
+            // configuration time — no Project/extension capture in the action.
+            val strict = STRICT
+            val modId = extension.modId
+            val targets = extension.targets.map { target ->
+                ModkitModelValidator.TargetView(target.name, target.loaders.get().isNotEmpty())
+            }
+
+            task.doLast {
+                val errors = ModkitModelValidator.validate(modId.orNull, targets)
+                if(errors.isNotEmpty()) {
+                    val report = buildString {
+                        append("Invalid Modkit model:")
+                        errors.forEach { append("\n  - ").append(it) }
+                    }
+                    if(strict) throw GradleException(report) else task.logger.warn(report)
+                }
+            }
+        }
+
+        // Attach to `check` only where a lifecycle exists; `core` never applies
+        // one.
+        project.pluginManager.withPlugin("lifecycle-base") {
+            project.tasks.named("check") { it.dependsOn(validate) }
+        }
+    }
+
+    private companion object {
+
+        // Strict validation fails the build; non-strict warns. Internal for
+        // now — no public toggle in `core`.
+        private const val STRICT: Boolean = true
+
     }
 
 }
