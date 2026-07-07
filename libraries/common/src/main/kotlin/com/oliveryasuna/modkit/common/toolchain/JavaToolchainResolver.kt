@@ -22,7 +22,9 @@ public object JavaToolchainResolver {
     }
 
     // For a multi-loader target, one JVM compiles to all its loaders -> take
-    // the max floor.
+    // the max floor. Empty input has no versions to compare, so it resolves to
+    // the newest known floor (25) rather than throwing — this feeds
+    // `JavaLanguageVersion.of` in `core` and must never be invalid.
     public fun resolveForTargets(versions: Iterable<String>): Int =
         versions.maxOfOrNull(::minimumJdkFor) ?: 25
 
