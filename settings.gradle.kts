@@ -17,12 +17,9 @@ rootProject.name = "modkit"
 
 includeBuild("build-logic")
 
-// ====================================================================
-// Shared libraries (plain Kotlin, published as their own artifacts)
-// ====================================================================
+// Shared libraries
 include("libraries:common")
+include("libraries:core-api")
 
-// ====================================================================
 // Plugin modules
-// ====================================================================
 include("plugins:core")
