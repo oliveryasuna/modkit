@@ -28,8 +28,14 @@ public class ModkitLoadersPlugin : Plugin<Project> {
 
         registerDiagnostics(project, modkit, loaders, activeLoader)
 
-        // NOTE: applying Fabric Loom / ModDevGradle for `activeLoader` and
-        // mapping the model onto it is a later increment.
+        // Apply and configure the base for the active loader. Absent
+        // property -> no base (diagnostics/model still work); NeoForge wiring
+        // lands next.
+        when(activeLoader) {
+            McLoader.FABRIC -> configureFabric(project, modkit, loaders)
+            McLoader.NEOFORGE -> configureNeoForge(project, modkit, loaders)
+            null -> Unit
+        }
     }
 
     private fun registerDiagnostics(
