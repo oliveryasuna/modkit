@@ -30,13 +30,19 @@ class BaseConventionsPlugin : Plugin<Project> {
 
         val libs = extensions.getByType<VersionCatalogsExtension>().named("libs")
         val javaVersion = libs.findVersion("java").get().requiredVersion.toInt()
-        val targetVersion = libs.findVersion("java-target").get().requiredVersion
+
+        // Bytecode target defaults to `java-target` (the low consumer floor)
+        // but is overridable per module via the `modkit.bytecodeTarget`
+        // property. Modules that wrap loader tooling (e.g. :plugins:loaders)
+        // must raise it  to that tooling's floor — Fabric Loom / ModDevGradle
+        // are Java 21, so a Java 17 target cannot link them.
+        val targetVersion = (findProperty("modkit.bytecodeTarget") as String?) ?: libs.findVersion("java-target").get().requiredVersion
 
         // 3. Configure the toolchain and bytecode target.
         //
-        // Build with `java` but emit `java-target` bytecode so the published
+        // Build with `java` but emit `targetVersion` bytecode so the published
         // artifacts load on the oldest Gradle JVM consumers use.
-        // -Xjdk-release` also pins the JDK API level so 21-only APIs can't leak
+        // -Xjdk-release` also pins the JDK API level so newer APIs can't leak
         // in.
         //
 

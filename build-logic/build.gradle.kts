@@ -16,6 +16,10 @@ gradlePlugin {
             id = "modkit.library-conventions"
             implementationClass = "com.oliveryasuna.modkit.conventions.LibraryConventionsPlugin"
         }
+        create("loaderPluginConventions") {
+            id = "modkit.loader-plugin-conventions"
+            implementationClass = "com.oliveryasuna.modkit.conventions.LoaderPluginConventionsPlugin"
+        }
     }
 }
 

@@ -4,10 +4,6 @@ public enum class McLoader {
 
     FABRIC,
 
-    NEOFORGE,
-
-    FORGE,
-
-    QUILT
+    NEOFORGE
 
 }

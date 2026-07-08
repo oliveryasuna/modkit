@@ -12,6 +12,13 @@ kotlin = "2.3.21"
 # Build / publishing plugins
 plugin-publish = "2.1.1"
 
+# Loader tooling — wrapped by :plugins:loaders and applied to consumer mod
+# builds. Parchment is intentionally absent: it is per-MC-version mappings data
+# (org.parchmentmc.data:parchment-<mc>:<date>), resolved during mappings wiring,
+# not a single pinnable plugin version.
+loom = "1.17.13"
+moddevgradle = "2.0.141"
+
 # Test
 junit = "6.1.1"
 
@@ -21,6 +28,11 @@ junit = "6.1.1"
 # Plugins
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-publish-plugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "plugin-publish" }
+
+# Loader tooling (real plugin artifacts; each carries its plugin descriptor so
+# it can be applied by id)
+fabric-loom = { module = "net.fabricmc:fabric-loom", version.ref = "loom" }
+moddev-gradle = { module = "net.neoforged:moddev-gradle", version.ref = "moddevgradle" }
 
 # Test
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }

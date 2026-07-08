@@ -10,8 +10,18 @@ dependencyResolutionManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()
+        // Loader tooling wrapped by :plugins:loaders. Scoped by group so they
+        // are only consulted for their own artifacts.
+        maven("https://maven.fabricmc.net/") {
+            content { includeGroupByRegex("net\\.fabricmc.*") }
+        }
+        maven("https://maven.neoforged.net/releases") {
+            content { includeGroupByRegex("net\\.neoforged.*") }
+        }
     }
 }
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "modkit"
 
@@ -23,3 +33,4 @@ include("libraries:core-api")
 
 // Plugin modules
 include("plugins:core")
+include("plugins:loaders")

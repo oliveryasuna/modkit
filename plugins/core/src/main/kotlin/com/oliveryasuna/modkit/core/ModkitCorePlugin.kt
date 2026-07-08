@@ -86,9 +86,7 @@ public class ModkitCorePlugin : Plugin<Project> {
             // configuration time — no Project/extension capture in the action.
             val strict = STRICT
             val modId = extension.modId
-            val targets = extension.targets.map { target ->
-                ModkitModelValidator.TargetView(target.name, target.loaders.get().isNotEmpty())
-            }
+            val targets = extension.targets.map { target -> ModkitModelValidator.TargetView(target.name, target.loaders.get().isNotEmpty()) }
 
             task.doLast {
                 val errors = ModkitModelValidator.validate(modId.orNull, targets)
