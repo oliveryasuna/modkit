@@ -20,7 +20,6 @@ public class ModkitCorePlugin : Plugin<Project> {
             authors.convention(emptyList())
 
             layout.commonSourceSet.convention("main")
-            layout.splitClient.convention(false)
         }
 
         // Per-target defaults applied as elements are created.

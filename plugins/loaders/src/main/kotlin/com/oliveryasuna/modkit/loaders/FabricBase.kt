@@ -16,11 +16,18 @@ import org.gradle.api.Project
 internal fun configureFabric(
     project: Project,
     modkit: ModkitExtension,
-    loaders: LoadersSpec
+    loaders: LoadersSpec,
+    splitClient: Boolean
 ) {
     project.pluginManager.apply("fabric-loom")
     project.addParchmentRepository()
     val loom = project.extensions.getByType(LoomGradleExtensionAPI::class.java)
+
+    // Split-client: create the client source set natively. Must run eagerly,
+    // before Loom finalizes its Minecraft jar configuration.
+    if(splitClient) {
+        loom.splitEnvironmentSourceSets()
+    }
 
     // Active Minecraft version: the single enabled target declaring FABRIC.
     // Resolved lazily — the model DSL is populated after this plugin applies.

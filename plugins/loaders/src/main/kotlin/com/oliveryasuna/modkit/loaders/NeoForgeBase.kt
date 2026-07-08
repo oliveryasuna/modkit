@@ -7,6 +7,8 @@ import com.oliveryasuna.modkit.loaders.extension.MappingsScheme
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.jvm.tasks.Jar
 
 /**
  * Applies and configures ModDevGradle for a NEOFORGE target, mapping the Modkit
@@ -20,7 +22,8 @@ import org.gradle.api.Project
 internal fun configureNeoForge(
     project: Project,
     modkit: ModkitExtension,
-    loaders: LoadersSpec
+    loaders: LoadersSpec,
+    splitClient: Boolean
 ) {
     // Transpile access wideners to a NeoForge access transformer (write-once).
     // Registered eagerly so it exists regardless of the afterEvaluate path.
@@ -69,6 +72,21 @@ internal fun configureNeoForge(
         if(parchmentVersion != null) {
             neoForge.parchment.minecraftVersion.set(neoforge.single().minecraftVersion)
             neoForge.parchment.mappingsVersion.set(parchmentVersion)
+        }
+
+        // Split-client: MDG has no native split, so synthesize a `client`
+        // source set that mirrors Fabric's — same modding classpath, sees
+        // main's code, packaged into the mod jar. This is where the
+        // Fabric/NeoForge divergence is normalized into one uniform `client`
+        // source set.
+        if(splitClient) {
+            val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+            val main = sourceSets.getByName("main")
+            val client = sourceSets.create("client")
+            neoForge.addModdingDependenciesTo(client)
+            client.compileClasspath += main.output
+            client.runtimeClasspath += main.output
+            project.tasks.named("jar", Jar::class.java) { it.from(client.output) }
         }
     }
 }

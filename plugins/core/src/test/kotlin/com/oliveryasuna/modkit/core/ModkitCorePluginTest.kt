@@ -44,7 +44,6 @@ class ModkitCorePluginTest {
     fun `layout and authors defaults`() {
         val ext = project().modkit
         assertEquals("main", ext.layout.commonSourceSet.get())
-        assertFalse(ext.layout.splitClient.get())
         assertTrue(ext.authors.get().isEmpty())
     }
 

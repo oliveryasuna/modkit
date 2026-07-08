@@ -2,8 +2,7 @@ package com.oliveryasuna.modkit.loaders
 
 import org.gradle.testkit.runner.GradleRunner
 import org.gradle.testkit.runner.TaskOutcome
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
@@ -198,6 +197,58 @@ class ModkitLoadersFunctionalTest {
             generatedAt.readText().contains("public net.minecraft.world.entity.Entity"),
             generatedAt.readText()
         )
+    }
+
+    // --- Split client (modkit.splitClient property) ---
+
+    private fun writeClientSource() {
+        projectDir.resolve("src/client/java/com/example").mkdirs()
+        projectDir.resolve("src/client/java/com/example/ClientOnly.java")
+            .writeText("package com.example;\npublic class ClientOnly {}\n")
+    }
+
+    @Test
+    fun `builds a split-client Fabric jar`() {
+        fabricFixtureSettings()
+        writeClientSource()
+        projectDir.resolve("build.gradle.kts").writeText(
+            """
+            plugins { id("com.oliveryasuna.modkit.loaders") }
+            modkit {
+                modId.set("mymod")
+                minecraft("1.21.1") { loaders.add(com.oliveryasuna.modkit.core.extension.McLoader.FABRIC) }
+                loaders { fabric { loaderVersion.set("0.19.3") } }
+            }
+            """.trimIndent()
+        )
+
+        val result = runner("remapJar", "-Pmodkit.loader=fabric", "-Pmodkit.splitClient=true", "--stacktrace").build()
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":remapJar")?.outcome, result.output)
+        // A `client` source set was created and compiled.
+        assertNotNull(result.task(":compileClientJava"), result.output)
+    }
+
+    @Test
+    fun `builds a split-client NeoForge jar`() {
+        neoForgeFixtureSettings()
+        writeClientSource()
+        projectDir.resolve("build.gradle.kts").writeText(
+            """
+            plugins { id("com.oliveryasuna.modkit.loaders") }
+            modkit {
+                modId.set("mymod")
+                minecraft("1.21.1") { loaders.add(com.oliveryasuna.modkit.core.extension.McLoader.NEOFORGE) }
+                loaders { neoforge { version.set("21.1.235") } }
+            }
+            """.trimIndent()
+        )
+
+        val result = runner("jar", "-Pmodkit.loader=neoforge", "-Pmodkit.splitClient=true", "--stacktrace").build()
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":jar")?.outcome, result.output)
+        // A synthesized `client` source set was created and compiled.
+        assertNotNull(result.task(":compileClientJava"), result.output)
     }
 
 }

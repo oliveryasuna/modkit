@@ -29,14 +29,26 @@ public class ModkitLoadersPlugin : Plugin<Project> {
 
         registerDiagnostics(project, modkit, loaders, activeLoader)
 
+        // Split-client is also read eagerly: creating the client source set is
+        // a structural change the base must make before Loom finalizes its
+        // config, which the late model cannot drive.
+        val splitClient = project.providers.gradleProperty(SPLIT_CLIENT_PROPERTY)
+            .map { it.toBoolean() }
+            .getOrElse(false)
+
         // Apply and configure the base for the active loader. Absent
-        // property -> no base (diagnostics/model still work); NeoForge wiring
-        // lands next.
+        // property -> no base (diagnostics/model still work).
         when(activeLoader) {
-            McLoader.FABRIC -> configureFabric(project, modkit, loaders)
-            McLoader.NEOFORGE -> configureNeoForge(project, modkit, loaders)
+            McLoader.FABRIC -> configureFabric(project, modkit, loaders, splitClient)
+            McLoader.NEOFORGE -> configureNeoForge(project, modkit, loaders, splitClient)
             null -> Unit
         }
+    }
+
+    private companion object {
+
+        private const val SPLIT_CLIENT_PROPERTY: String = "modkit.splitClient"
+
     }
 
     private fun registerDiagnostics(
