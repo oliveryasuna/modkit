@@ -60,9 +60,23 @@ internal fun configureFabric(
         }
     }
 
+    // Access widener — Loom takes a single file. Resolved lazily so the DSL is
+    // populated; null (no widener) leaves the property unset.
+    loom.accessWidenerPath.fileProvider(
+        project.provider {
+            val files = loaders.accessWideners.files
+            require(files.size <= 1) {
+                "Fabric Loom supports a single access widener, but ${files.size} were provided."
+            }
+            files.firstOrNull()
+        }
+    )
+
     with(project.dependencies) {
         addProvider("minecraft", minecraftVersion.map { "com.mojang:minecraft:$it" })
         addProvider("mappings", mappings)
         addProvider("modImplementation", loaders.fabric.loaderVersion.map { "net.fabricmc:fabric-loader:$it" })
+        // fabric-api is optional — an absent apiVersion adds nothing.
+        addProvider("modImplementation", loaders.fabric.apiVersion.map { "net.fabricmc.fabric-api:fabric-api:$it" })
     }
 }

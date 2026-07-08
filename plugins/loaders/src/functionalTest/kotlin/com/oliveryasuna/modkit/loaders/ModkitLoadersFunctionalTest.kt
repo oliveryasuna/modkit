@@ -98,6 +98,12 @@ class ModkitLoadersFunctionalTest {
     }
 
     private fun fabricFixtureBuild() {
+        projectDir.resolve("src/main/resources").mkdirs()
+        // Header-only access widener: valid and exercises the wiring without
+        // depending on a specific Minecraft member.
+        projectDir.resolve("src/main/resources/mymod.accesswidener")
+            .writeText("accessWidener v2 named\n")
+
         projectDir.resolve("build.gradle.kts").writeText(
             """
             plugins {
@@ -108,8 +114,12 @@ class ModkitLoadersFunctionalTest {
                 modId.set("mymod")
                 minecraft("1.21.1") { loaders.add(com.oliveryasuna.modkit.core.extension.McLoader.FABRIC) }
                 loaders {
-                    fabric { loaderVersion.set("0.19.3") }
+                    fabric {
+                        loaderVersion.set("0.19.3")
+                        apiVersion.set("0.116.13+1.21.1")
+                    }
                     mappings { parchment.set("2024.11.17") }
+                    accessWideners.from("src/main/resources/mymod.accesswidener")
                 }
             }
             """.trimIndent()
@@ -117,7 +127,7 @@ class ModkitLoadersFunctionalTest {
     }
 
     @Test
-    fun `builds a remapped Fabric jar with mojmap plus parchment mappings`() {
+    fun `builds a Fabric jar with parchment, fabric-api, and an access widener`() {
         fabricFixtureSettings()
         fabricFixtureBuild()
 
