@@ -63,7 +63,7 @@ internal fun configureNeoForge(
         val neoForge = project.extensions.getByType(NeoForgeExtension::class.java)
         neoForge.setVersion(version)
 
-        // Feed the generated AT to MDG (task output → carries the dependency).
+        // Feed the generated AT to MDG (task output -> carries the dependency).
         neoForge.accessTransformers.from(generateAccessTransformer.flatMap { it.accessTransformer })
 
         // Layer parchment when a version is present (NeoForge is mojmap-native,

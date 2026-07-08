@@ -17,7 +17,7 @@ gradlePlugin {
 
 dependencies {
     implementation(project(":libraries:common"))
-    implementation(project(":libraries:core-api"))
+    implementation(project(":libraries:plugin-support"))
 
     runtimeOnly(project(":plugins:core"))
 

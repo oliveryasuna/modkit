@@ -27,6 +27,10 @@ accesstransformers = "13.0.3"
 # and neoforge.mods.toml from the shared model.
 night-config = "3.8.3"
 
+# Publishing — wrapped by :plugins:publish to upload built artifacts to
+# Modrinth, CurseForge, GitHub, and Discord from the shared model.
+mod-publish-plugin = "2.1.1"
+
 # Test
 junit = "6.1.1"
 
@@ -47,6 +51,10 @@ accesstransformers = { module = "net.neoforged:accesstransformers", version.ref 
 # Manifest serialization (NightConfig)
 nightconfig-json = { module = "com.electronwill.night-config:json", version.ref = "night-config" }
 nightconfig-toml = { module = "com.electronwill.night-config:toml", version.ref = "night-config" }
+
+# Publishing (real plugin artifact; carries its plugin descriptor so it can be
+# applied by id)
+mod-publish-plugin = { module = "me.modmuss50.mod-publish-plugin:me.modmuss50.mod-publish-plugin.gradle.plugin", version.ref = "mod-publish-plugin" }
 
 # Test
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }

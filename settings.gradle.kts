@@ -30,8 +30,10 @@ includeBuild("build-logic")
 // Shared libraries
 include("libraries:common")
 include("libraries:core-api")
+include("libraries:plugin-support")
 
 // Plugin modules
 include("plugins:core")
 include("plugins:loaders")
 include("plugins:metadata")
+include("plugins:publish")

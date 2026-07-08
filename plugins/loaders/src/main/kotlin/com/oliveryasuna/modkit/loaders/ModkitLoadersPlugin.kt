@@ -4,28 +4,25 @@ import com.oliveryasuna.modkit.core.extension.McLoader
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.loaders.extension.LoadersSpec
 import com.oliveryasuna.modkit.loaders.extension.MappingsScheme
+import com.oliveryasuna.modkit.plugin.activeLoader
+import com.oliveryasuna.modkit.plugin.applyModkitCore
+import com.oliveryasuna.modkit.plugin.registerBlock
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.ExtensionAware
 
 public class ModkitLoadersPlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         // `loaders` builds on the shared model — apply core first so `modkit`
         // exists, then attach the `loaders` block as its ExtensionAware child.
-        project.pluginManager.apply("com.oliveryasuna.modkit.core")
-
-        val modkit = project.extensions.getByType(ModkitExtension::class.java)
-        val loaders = (modkit as ExtensionAware).extensions
-            .create("loaders", LoadersSpec::class.java)
+        val modkit = project.applyModkitCore()
+        val loaders = modkit.registerBlock("loaders", LoadersSpec::class.java)
 
         loaders.mappings.scheme.convention(MappingsScheme.MOJMAP)
 
         // Choose the base eagerly from `modkit.loader` — the model DSL has not
         // run yet, so the property is the only signal available at this point.
-        val activeLoader = ActiveLoader.resolve(
-            project.providers.gradleProperty(McLoader.PROPERTY).orNull
-        )
+        val activeLoader = project.activeLoader()
 
         registerDiagnostics(project, modkit, loaders, activeLoader)
 

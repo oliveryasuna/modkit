@@ -3,9 +3,12 @@ package com.oliveryasuna.modkit.metadata
 import com.oliveryasuna.modkit.core.extension.McLoader
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.metadata.extension.MetadataSpec
+import com.oliveryasuna.modkit.plugin.activeLoader
+import com.oliveryasuna.modkit.plugin.applyModkitCore
+import com.oliveryasuna.modkit.plugin.registerBlock
+import com.oliveryasuna.modkit.plugin.wireIntoCheck
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskProvider
@@ -15,11 +18,8 @@ public class ModkitMetadataPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         // `metadata` builds on the shared model — apply core first so `modkit`
         // exists, then attach the `metadata` block as its ExtensionAware child.
-        project.pluginManager.apply("com.oliveryasuna.modkit.core")
-
-        val modkit = project.extensions.getByType(ModkitExtension::class.java)
-        val metadata = (modkit as ExtensionAware).extensions
-            .create("metadata", MetadataSpec::class.java)
+        val modkit = project.applyModkitCore()
+        val metadata = modkit.registerBlock("metadata", MetadataSpec::class.java)
 
         metadata.environment.convention("*")
         metadata.validation.failOnMissingIcon.convention(true)
@@ -28,9 +28,7 @@ public class ModkitMetadataPlugin : Plugin<Project> {
 
         // Choose the target loader eagerly from `modkit.loader` — only one
         // manifest is generated per invocation, for the active loader.
-        val activeLoader = ActiveLoader.resolve(
-            project.providers.gradleProperty(McLoader.PROPERTY).orNull
-        )
+        val activeLoader = project.activeLoader()
 
         registerGenerate(project, modkit, metadata, activeLoader)
         registerValidation(project, modkit, metadata)
@@ -74,7 +72,7 @@ public class ModkitMetadataPlugin : Plugin<Project> {
                 }
         }
 
-        // The manifest is common → main source set. Adding the gen dir as a
+        // The manifest is common -> main source set. Adding the gen dir as a
         // resource source (via the task's output provider) infers the task
         // dependency so processResources picks the manifest up.
         project.pluginManager.withPlugin("java-base") {
@@ -124,9 +122,7 @@ public class ModkitMetadataPlugin : Plugin<Project> {
         }
 
         // Attach to `check` only where a lifecycle exists.
-        project.pluginManager.withPlugin("lifecycle-base") {
-            project.tasks.named("check") { it.dependsOn(validate) }
-        }
+        project.wireIntoCheck(validate)
     }
 
 }
