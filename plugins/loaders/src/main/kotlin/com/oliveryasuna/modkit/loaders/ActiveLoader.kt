@@ -27,10 +27,6 @@ internal object ActiveLoader {
         val loader = McLoader.entries.firstOrNull { it.name.equals(value, ignoreCase = true) }
                      ?: throw GradleException("Unknown '$PROPERTY' value '$value'; expected one of " + McLoader.entries.joinToString { it.name.lowercase() })
 
-        if(loader !in SUPPORTED) {
-            throw GradleException("'$PROPERTY=$value' is not supported yet; only " + SUPPORTED.joinToString { it.name.lowercase() } + " have a loader base.")
-        }
-
         return loader
     }
 
