@@ -2,6 +2,7 @@ package com.oliveryasuna.modkit.loaders
 
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.loaders.extension.LoadersSpec
+import com.oliveryasuna.modkit.loaders.extension.MappingsScheme
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.testfixtures.ProjectBuilder
@@ -34,8 +35,8 @@ class ModkitLoadersPluginTest {
     }
 
     @Test
-    fun `mappings scheme defaults to mojmap+parchment`() {
-        assertEquals("mojmap+parchment", project().loaders.mappings.scheme.get())
+    fun `mappings scheme defaults to MOJMAP`() {
+        assertEquals(MappingsScheme.MOJMAP, project().loaders.mappings.scheme.get())
     }
 
     @Test

@@ -3,7 +3,9 @@ package com.oliveryasuna.modkit.loaders
 import com.oliveryasuna.modkit.core.extension.McLoader
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.loaders.extension.LoadersSpec
+import com.oliveryasuna.modkit.loaders.extension.MappingsScheme
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
+import org.gradle.api.GradleException
 import org.gradle.api.Project
 
 /**
@@ -17,6 +19,7 @@ internal fun configureFabric(
     loaders: LoadersSpec
 ) {
     project.pluginManager.apply("fabric-loom")
+    project.addParchmentRepository()
     val loom = project.extensions.getByType(LoomGradleExtensionAPI::class.java)
 
     // Active Minecraft version: the single enabled target declaring FABRIC.
@@ -35,9 +38,31 @@ internal fun configureFabric(
         fabric.single().minecraftVersion
     }
 
+    // Mappings dependency, built lazily from the scheme + optional parchment.
+    // Parchment is layered onto mojmap when a version is present.
+    val mappings = project.provider {
+        when(loaders.mappings.scheme.get()) {
+            MappingsScheme.MOJMAP -> {
+                val parchment = loaders.mappings.parchment.orNull
+                if(parchment == null) {
+                    loom.officialMojangMappings()
+                } else {
+                    loom.layered {
+                        it.officialMojangMappings()
+                        // Parchment data is published as a zip (no POM) -> the
+                        // @zip extension is required for Loom to resolve it.
+                        it.parchment("org.parchmentmc.data:parchment-${minecraftVersion.get()}:$parchment@zip")
+                    }
+                }
+            }
+
+            MappingsScheme.YARN -> throw GradleException("Yarn mappings are not yet wired for the Fabric base (no curated yarn version source). Use scheme = MOJMAP.")
+        }
+    }
+
     with(project.dependencies) {
         addProvider("minecraft", minecraftVersion.map { "com.mojang:minecraft:$it" })
-        add("mappings", loom.officialMojangMappings())
+        addProvider("mappings", mappings)
         addProvider("modImplementation", loaders.fabric.loaderVersion.map { "net.fabricmc:fabric-loader:$it" })
     }
 }

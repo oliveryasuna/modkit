@@ -48,7 +48,7 @@ class ModkitLoadersFunctionalTest {
         val result = runner("modkitLoaderInfo", "-q").build()
 
         assertTrue(result.output.contains("loader:    <not set>"), result.output)
-        assertTrue(result.output.contains("mappings:  mojmap+parchment"), result.output)
+        assertTrue(result.output.contains("mappings:  MOJMAP"), result.output)
     }
 
     @Test
@@ -106,9 +106,10 @@ class ModkitLoadersFunctionalTest {
 
             modkit {
                 modId.set("mymod")
-                minecraft("1.21.8") { loaders.add(com.oliveryasuna.modkit.core.extension.McLoader.FABRIC) }
+                minecraft("1.21.1") { loaders.add(com.oliveryasuna.modkit.core.extension.McLoader.FABRIC) }
                 loaders {
                     fabric { loaderVersion.set("0.19.3") }
+                    mappings { parchment.set("2024.11.17") }
                 }
             }
             """.trimIndent()
@@ -116,7 +117,7 @@ class ModkitLoadersFunctionalTest {
     }
 
     @Test
-    fun `builds a remapped Fabric jar from the model`() {
+    fun `builds a remapped Fabric jar with mojmap plus parchment mappings`() {
         fabricFixtureSettings()
         fabricFixtureBuild()
 
@@ -155,9 +156,10 @@ class ModkitLoadersFunctionalTest {
 
             modkit {
                 modId.set("mymod")
-                minecraft("1.21.8") { loaders.add(com.oliveryasuna.modkit.core.extension.McLoader.NEOFORGE) }
+                minecraft("1.21.1") { loaders.add(com.oliveryasuna.modkit.core.extension.McLoader.NEOFORGE) }
                 loaders {
-                    neoforge { version.set("21.8.53") }
+                    neoforge { version.set("21.1.235") }
+                    mappings { parchment.set("2024.11.17") }
                 }
             }
             """.trimIndent()
@@ -165,7 +167,7 @@ class ModkitLoadersFunctionalTest {
     }
 
     @Test
-    fun `builds a NeoForge jar from the model`() {
+    fun `builds a NeoForge jar with mojmap plus parchment mappings`() {
         neoForgeFixtureSettings()
         neoForgeFixtureBuild()
 

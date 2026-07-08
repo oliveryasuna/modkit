@@ -3,6 +3,7 @@ package com.oliveryasuna.modkit.loaders
 import com.oliveryasuna.modkit.core.extension.McLoader
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.loaders.extension.LoadersSpec
+import com.oliveryasuna.modkit.loaders.extension.MappingsScheme
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
@@ -18,7 +19,7 @@ public class ModkitLoadersPlugin : Plugin<Project> {
         val loaders = (modkit as ExtensionAware).extensions
             .create("loaders", LoadersSpec::class.java)
 
-        loaders.mappings.scheme.convention("mojmap+parchment")
+        loaders.mappings.scheme.convention(MappingsScheme.MOJMAP)
 
         // Choose the base eagerly from `modkit.loader` — the model DSL has not
         // run yet, so the property is the only signal available at this point.

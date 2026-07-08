@@ -3,6 +3,7 @@ package com.oliveryasuna.modkit.loaders
 import com.oliveryasuna.modkit.core.extension.McLoader
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.loaders.extension.LoadersSpec
+import com.oliveryasuna.modkit.loaders.extension.MappingsScheme
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import org.gradle.api.GradleException
 import org.gradle.api.Project
@@ -33,10 +34,26 @@ internal fun configureNeoForge(
             "neoforge (${neoforge.joinToString { it.minecraftVersion }}). Use multiversion or declare one."
         }
 
+        if(loaders.mappings.scheme.get() == MappingsScheme.YARN) {
+            throw GradleException(
+                "Yarn mappings are not supported on NeoForge (mojmap-native). Use scheme = MOJMAP."
+            )
+        }
+
         val version = loaders.neoforge.version.orNull
                       ?: throw GradleException("modkit.loader=neoforge requires modkit.loaders.neoforge.version to be set.")
 
         project.pluginManager.apply("net.neoforged.moddev")
-        project.extensions.getByType(NeoForgeExtension::class.java).setVersion(version)
+        project.addParchmentRepository()
+        val neoForge = project.extensions.getByType(NeoForgeExtension::class.java)
+        neoForge.setVersion(version)
+
+        // Layer parchment when a version is present (NeoForge is mojmap-native,
+        // so parchment applies directly).
+        val parchmentVersion = loaders.mappings.parchment.orNull
+        if(parchmentVersion != null) {
+            neoForge.parchment.minecraftVersion.set(neoforge.single().minecraftVersion)
+            neoForge.parchment.mappingsVersion.set(parchmentVersion)
+        }
     }
 }
