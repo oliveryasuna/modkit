@@ -24,7 +24,7 @@ public class ModkitLoadersPlugin : Plugin<Project> {
         // Choose the base eagerly from `modkit.loader` — the model DSL has not
         // run yet, so the property is the only signal available at this point.
         val activeLoader = ActiveLoader.resolve(
-            project.providers.gradleProperty(ActiveLoader.PROPERTY).orNull
+            project.providers.gradleProperty(McLoader.PROPERTY).orNull
         )
 
         registerDiagnostics(project, modkit, loaders, activeLoader)
@@ -71,7 +71,7 @@ public class ModkitLoadersPlugin : Plugin<Project> {
             val targets = modkit.targets.map { target -> "${target.minecraftVersion} -> ${target.loaders.get()}" }
 
             task.doLast {
-                println("loader:    ${activeLoader?.name ?: "<not set> (set -P${ActiveLoader.PROPERTY}=fabric|neoforge)"}")
+                println("loader:    ${activeLoader?.name ?: "<not set> (set -P${McLoader.PROPERTY}=fabric|neoforge)"}")
                 println("mappings:  ${scheme.orNull}")
                 println("parchment: ${parchment.orNull}")
                 println("fabric:    loader=${fabricLoader.orNull} api=${fabricApi.orNull}")

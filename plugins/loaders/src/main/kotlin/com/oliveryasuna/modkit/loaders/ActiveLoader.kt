@@ -10,24 +10,16 @@ import org.gradle.api.GradleException
  */
 internal object ActiveLoader {
 
-    const val PROPERTY: String = "modkit.loader"
-
-    /** Loaders that currently have a base wired (Loom / MDG). */
-    private val SUPPORTED: Set<McLoader> = setOf(McLoader.FABRIC, McLoader.NEOFORGE)
-
     /**
-     * Maps a raw `modkit.loader` value to a supported [McLoader], or `null`
-     * when unset/blank. Throws on unknown or unsupported values so typos fail
-     * fast.
+     * Maps a raw `modkit.loader` value to its [McLoader], or `null` when
+     * unset/blank. Delegates to the shared contract and surfaces bad values as
+     * a Gradle-friendly build failure.
      */
-    fun resolve(raw: String?): McLoader? {
-        val value = raw?.trim()
-        if(value.isNullOrEmpty()) return null
-
-        val loader = McLoader.entries.firstOrNull { it.name.equals(value, ignoreCase = true) }
-                     ?: throw GradleException("Unknown '$PROPERTY' value '$value'; expected one of " + McLoader.entries.joinToString { it.name.lowercase() })
-
-        return loader
-    }
+    fun resolve(raw: String?): McLoader? =
+        try {
+            McLoader.fromProperty(raw)
+        } catch(e: IllegalArgumentException) {
+            throw GradleException(e.message ?: "Invalid '${McLoader.PROPERTY}' value", e)
+        }
 
 }
