@@ -1,0 +1,60 @@
+package com.oliveryasuna.modkit.metadata
+
+import org.gradle.api.DefaultTask
+import org.gradle.api.GradleException
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Internal
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.TaskAction
+import org.gradle.work.DisableCachingByDefault
+
+/**
+ * Validates the resolved metadata model (semver, declared icon, mixin configs).
+ */
+@DisableCachingByDefault(because = "Validation is fast and produces no cacheable output.")
+internal abstract class ValidateModMetadataTask : DefaultTask() {
+
+    @get:[Input Optional]
+    abstract val version: Property<String>
+
+    @get:[Input Optional]
+    abstract val icon: Property<String>
+
+    @get:Internal
+    abstract val resourcesDir: DirectoryProperty
+
+    @get:Input
+    abstract val failOnMissingIcon: Property<Boolean>
+
+    @get:Input
+    abstract val failOnInvalidSemver: Property<Boolean>
+
+    @get:Input
+    abstract val failOnUndeclaredMixinConfig: Property<Boolean>
+
+    @TaskAction
+    fun validate() {
+        val iconName = icon.orNull
+        val iconExists = iconName != null && resourcesDir.get().file(iconName).asFile.exists()
+
+        val errors = ModMetadataValidator.validate(
+            version = version.orNull,
+            icon = iconName,
+            iconExists = iconExists,
+            failOnMissingIcon = failOnMissingIcon.get(),
+            failOnInvalidSemver = failOnInvalidSemver.get(),
+            failOnUndeclaredMixinConfig = failOnUndeclaredMixinConfig.get()
+        )
+
+        if(errors.isNotEmpty()) {
+            val report = buildString {
+                append("Invalid mod metadata:")
+                errors.forEach { append("\n  - ").append(it) }
+            }
+            throw GradleException(report)
+        }
+    }
+
+}

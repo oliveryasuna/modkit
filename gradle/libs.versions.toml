@@ -18,9 +18,14 @@ plugin-publish = "2.1.1"
 # not a single pinnable plugin version.
 loom = "1.17.13"
 moddevgradle = "2.0.141"
+
 # AW->AT transpiler: parse Fabric access wideners, emit NeoForge access transformers.
 access-widener = "2.1.0"
 accesstransformers = "13.0.3"
+
+# Manifest serialization — wrapped by :plugins:metadata to emit fabric.mod.json
+# and neoforge.mods.toml from the shared model.
+night-config = "3.8.3"
 
 # Test
 junit = "6.1.1"
@@ -38,6 +43,10 @@ fabric-loom = { module = "net.fabricmc:fabric-loom", version.ref = "loom" }
 moddev-gradle = { module = "net.neoforged:moddev-gradle", version.ref = "moddevgradle" }
 access-widener = { module = "net.fabricmc:access-widener", version.ref = "access-widener" }
 accesstransformers = { module = "net.neoforged:accesstransformers", version.ref = "accesstransformers" }
+
+# Manifest serialization (NightConfig)
+nightconfig-json = { module = "com.electronwill.night-config:json", version.ref = "night-config" }
+nightconfig-toml = { module = "com.electronwill.night-config:toml", version.ref = "night-config" }
 
 # Test
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }

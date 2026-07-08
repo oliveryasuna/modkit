@@ -34,3 +34,4 @@ include("libraries:core-api")
 // Plugin modules
 include("plugins:core")
 include("plugins:loaders")
+include("plugins:metadata")

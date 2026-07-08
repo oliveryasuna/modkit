@@ -1,0 +1,132 @@
+package com.oliveryasuna.modkit.metadata
+
+import com.oliveryasuna.modkit.core.extension.McLoader
+import com.oliveryasuna.modkit.core.extension.ModkitExtension
+import com.oliveryasuna.modkit.metadata.extension.MetadataSpec
+import org.gradle.api.Plugin
+import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.SourceSetContainer
+import org.gradle.api.tasks.TaskProvider
+
+public class ModkitMetadataPlugin : Plugin<Project> {
+
+    override fun apply(project: Project) {
+        // `metadata` builds on the shared model — apply core first so `modkit`
+        // exists, then attach the `metadata` block as its ExtensionAware child.
+        project.pluginManager.apply("com.oliveryasuna.modkit.core")
+
+        val modkit = project.extensions.getByType(ModkitExtension::class.java)
+        val metadata = (modkit as ExtensionAware).extensions
+            .create("metadata", MetadataSpec::class.java)
+
+        metadata.environment.convention("*")
+        metadata.validation.failOnMissingIcon.convention(true)
+        metadata.validation.failOnInvalidSemver.convention(true)
+        metadata.validation.failOnUndeclaredMixinConfig.convention(true)
+
+        // Choose the target loader eagerly from `modkit.loader` — only one
+        // manifest is generated per invocation, for the active loader.
+        val activeLoader = ActiveLoader.resolve(
+            project.providers.gradleProperty(McLoader.PROPERTY).orNull
+        )
+
+        registerGenerate(project, modkit, metadata, activeLoader)
+        registerValidation(project, modkit, metadata)
+    }
+
+    private fun registerGenerate(
+        project: Project,
+        modkit: ModkitExtension,
+        metadata: MetadataSpec,
+        activeLoader: McLoader?
+    ) {
+        if(activeLoader == null) return
+
+        // Minecraft version of the first enabled target that includes the
+        // active loader; absent when no such target is declared.
+        val minecraftVersion: Provider<String> = project.provider {
+            modkit.targets
+                .firstOrNull { it.enabled.get() && it.loaders.get().contains(activeLoader) }
+                ?.minecraftVersion
+        }
+
+        val outputDir = project.layout.buildDirectory.dir("modkit/metadata/${activeLoader.name.lowercase()}")
+
+        val generateTask: TaskProvider<out GenerateManifestTask> = when(activeLoader) {
+            McLoader.FABRIC ->
+                project.tasks.register("generateFabricModJson", GenerateFabricModJsonTask::class.java) { task ->
+                    task.group = "modkit"
+                    task.description = "Generates fabric.mod.json from the Modkit model."
+                    configureIdentity(task, modkit, metadata, minecraftVersion)
+                    task.rawOverrides.set(metadata.fabric.raw)
+                    task.outputDir.set(outputDir)
+                }
+
+            McLoader.NEOFORGE ->
+                project.tasks.register("generateNeoForgeToml", GenerateNeoForgeTomlTask::class.java) { task ->
+                    task.group = "modkit"
+                    task.description = "Generates neoforge.mods.toml from the Modkit model."
+                    configureIdentity(task, modkit, metadata, minecraftVersion)
+                    task.rawOverrides.set(metadata.neoforge.raw)
+                    task.outputDir.set(outputDir)
+                }
+        }
+
+        // The manifest is common → main source set. Adding the gen dir as a
+        // resource source (via the task's output provider) infers the task
+        // dependency so processResources picks the manifest up.
+        project.pluginManager.withPlugin("java-base") {
+            val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+            sourceSets.getByName("main").resources.srcDir(generateTask.flatMap { it.outputDir })
+        }
+    }
+
+    private fun configureIdentity(
+        task: GenerateManifestTask,
+        modkit: ModkitExtension,
+        metadata: MetadataSpec,
+        minecraftVersion: Provider<String>
+    ) {
+        task.modId.set(modkit.modId)
+        task.version.set(modkit.version)
+        task.displayName.set(modkit.displayName)
+        task.modDescription.set(modkit.description)
+        task.authors.set(modkit.authors)
+        task.license.set(modkit.license)
+        task.icon.set(metadata.icon)
+        task.homepage.set(modkit.urls.homepage)
+        task.source.set(modkit.urls.source)
+        task.issues.set(modkit.urls.issues)
+        task.environment.set(metadata.environment)
+        task.minecraftVersion.set(minecraftVersion)
+        task.entrypointsMain.set(metadata.entrypoints.main)
+        task.entrypointsClient.set(metadata.entrypoints.client)
+        task.dependencies.set(metadata.dependsOn.constraints)
+    }
+
+    private fun registerValidation(
+        project: Project,
+        modkit: ModkitExtension,
+        metadata: MetadataSpec
+    ) {
+        val validate = project.tasks.register("validateModMetadata", ValidateModMetadataTask::class.java) { task ->
+            task.group = "verification"
+            task.description = "Validates the resolved mod metadata (semver, icon, mixin configs)."
+
+            task.version.set(modkit.version)
+            task.icon.set(metadata.icon)
+            task.resourcesDir.set(project.layout.projectDirectory.dir("src/main/resources"))
+            task.failOnMissingIcon.set(metadata.validation.failOnMissingIcon)
+            task.failOnInvalidSemver.set(metadata.validation.failOnInvalidSemver)
+            task.failOnUndeclaredMixinConfig.set(metadata.validation.failOnUndeclaredMixinConfig)
+        }
+
+        // Attach to `check` only where a lifecycle exists.
+        project.pluginManager.withPlugin("lifecycle-base") {
+            project.tasks.named("check") { it.dependsOn(validate) }
+        }
+    }
+
+}
