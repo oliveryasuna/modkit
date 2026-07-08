@@ -1,0 +1,25 @@
+version: 2
+updates:
+  # Watches gradle/libs.versions.toml + every build.gradle.kts for dependency
+  # bumps (Fabric API, YACL, Cloth, NeoForge, gson, spotless, etc.).
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 10
+    labels:
+      - dependencies
+      - gradle
+
+  # Watches every workflow's `uses:` pins (actions/checkout, setup-java,
+  # gradle/actions/setup-gradle, codeql-action, etc.).
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    labels:
+      - dependencies
+      - github-actions
