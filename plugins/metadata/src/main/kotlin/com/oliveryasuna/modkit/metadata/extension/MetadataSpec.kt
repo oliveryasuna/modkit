@@ -4,7 +4,7 @@ import org.gradle.api.Action
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Nested
 
-public abstract class MetadataSpec {c
+public abstract class MetadataSpec {
 
     public abstract val icon: Property<String>
     public abstract val environment: Property<String>
