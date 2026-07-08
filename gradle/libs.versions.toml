@@ -18,6 +18,9 @@ plugin-publish = "2.1.1"
 # not a single pinnable plugin version.
 loom = "1.17.13"
 moddevgradle = "2.0.141"
+# AW->AT transpiler: parse Fabric access wideners, emit NeoForge access transformers.
+access-widener = "2.1.0"
+accesstransformers = "13.0.3"
 
 # Test
 junit = "6.1.1"
@@ -33,6 +36,8 @@ plugin-publish-plugin = { module = "com.gradle.publish:plugin-publish-plugin", v
 # it can be applied by id)
 fabric-loom = { module = "net.fabricmc:fabric-loom", version.ref = "loom" }
 moddev-gradle = { module = "net.neoforged:moddev-gradle", version.ref = "moddevgradle" }
+access-widener = { module = "net.fabricmc:access-widener", version.ref = "access-widener" }
+accesstransformers = { module = "net.neoforged:accesstransformers", version.ref = "accesstransformers" }
 
 # Test
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }

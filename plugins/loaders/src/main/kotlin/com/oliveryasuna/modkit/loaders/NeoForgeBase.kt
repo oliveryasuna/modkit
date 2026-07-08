@@ -22,6 +22,18 @@ internal fun configureNeoForge(
     modkit: ModkitExtension,
     loaders: LoadersSpec
 ) {
+    // Transpile access wideners to a NeoForge access transformer (write-once).
+    // Registered eagerly so it exists regardless of the afterEvaluate path.
+    val generateAccessTransformer = project.tasks.register(
+        "generateAccessTransformer",
+        GenerateAccessTransformerTask::class.java
+    ) { task ->
+        task.group = "modkit"
+        task.description = "Generates a NeoForge access transformer from the project's access wideners."
+        task.accessWideners.from(loaders.accessWideners)
+        task.accessTransformer.set(project.layout.buildDirectory.file("modkit/accesstransformer.cfg"))
+    }
+
     project.afterEvaluate {
         val neoforge = modkit.targets.filter { target ->
             target.enabled.get() && McLoader.NEOFORGE in target.loaders.get()
@@ -47,6 +59,9 @@ internal fun configureNeoForge(
         project.addParchmentRepository()
         val neoForge = project.extensions.getByType(NeoForgeExtension::class.java)
         neoForge.setVersion(version)
+
+        // Feed the generated AT to MDG (task output → carries the dependency).
+        neoForge.accessTransformers.from(generateAccessTransformer.flatMap { it.accessTransformer })
 
         // Layer parchment when a version is present (NeoForge is mojmap-native,
         // so parchment applies directly).

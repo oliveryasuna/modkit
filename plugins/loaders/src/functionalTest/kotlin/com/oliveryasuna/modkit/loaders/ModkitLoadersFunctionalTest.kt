@@ -158,6 +158,12 @@ class ModkitLoadersFunctionalTest {
     }
 
     private fun neoForgeFixtureBuild() {
+        projectDir.resolve("src/main/resources").mkdirs()
+        // Widen a stable vanilla class so the generated AT targets a real member.
+        projectDir.resolve("src/main/resources/mymod.accesswidener").writeText(
+            "accessWidener v2 named\naccessible class net/minecraft/world/entity/Entity\n"
+        )
+
         projectDir.resolve("build.gradle.kts").writeText(
             """
             plugins {
@@ -170,6 +176,7 @@ class ModkitLoadersFunctionalTest {
                 loaders {
                     neoforge { version.set("21.1.235") }
                     mappings { parchment.set("2024.11.17") }
+                    accessWideners.from("src/main/resources/mymod.accesswidener")
                 }
             }
             """.trimIndent()
@@ -177,13 +184,20 @@ class ModkitLoadersFunctionalTest {
     }
 
     @Test
-    fun `builds a NeoForge jar with mojmap plus parchment mappings`() {
+    fun `builds a NeoForge jar and transpiles the access widener to an AT`() {
         neoForgeFixtureSettings()
         neoForgeFixtureBuild()
 
         val result = runner("jar", "-Pmodkit.loader=neoforge", "--stacktrace").build()
 
         assertEquals(TaskOutcome.SUCCESS, result.task(":jar")?.outcome, result.output)
+        assertEquals(TaskOutcome.SUCCESS, result.task(":generateAccessTransformer")?.outcome, result.output)
+        val generatedAt = projectDir.resolve("build/modkit/accesstransformer.cfg")
+        assertTrue(generatedAt.exists(), "expected generated AT at ${generatedAt.path}")
+        assertTrue(
+            generatedAt.readText().contains("public net.minecraft.world.entity.Entity"),
+            generatedAt.readText()
+        )
     }
 
 }

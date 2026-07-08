@@ -26,4 +26,8 @@ dependencies {
     // in loaders' public API). Only the base for `modkit.loader` is applied.
     implementation(libs.fabric.loom)
     implementation(libs.moddev.gradle)
+
+    // AW->AT transpiler libraries (parse Fabric AW / model NeoForge AT).
+    implementation(libs.access.widener)
+    implementation(libs.accesstransformers)
 }
