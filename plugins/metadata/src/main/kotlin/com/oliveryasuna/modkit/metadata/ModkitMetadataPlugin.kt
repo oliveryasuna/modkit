@@ -3,11 +3,7 @@ package com.oliveryasuna.modkit.metadata
 import com.oliveryasuna.modkit.core.extension.McLoader
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.metadata.extension.MetadataSpec
-import com.oliveryasuna.modkit.plugin.activeLoader
-import com.oliveryasuna.modkit.plugin.applyModkitCore
-import com.oliveryasuna.modkit.plugin.modkitManifestContributions
-import com.oliveryasuna.modkit.plugin.registerBlock
-import com.oliveryasuna.modkit.plugin.wireIntoCheck
+import com.oliveryasuna.modkit.plugin.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
@@ -61,6 +57,7 @@ public class ModkitMetadataPlugin : Plugin<Project> {
                     configureIdentity(task, modkit, metadata, minecraftVersion)
                     task.rawOverrides.set(metadata.fabric.raw)
                     task.mixinConfigs.set(project.modkitManifestContributions().mixinConfigs)
+                    task.fabricDatagenEntrypoints.set(project.modkitManifestContributions().fabricDatagenEntrypoints)
                     task.outputDir.set(outputDir)
                 }
 
@@ -71,6 +68,7 @@ public class ModkitMetadataPlugin : Plugin<Project> {
                     configureIdentity(task, modkit, metadata, minecraftVersion)
                     task.rawOverrides.set(metadata.neoforge.raw)
                     task.mixinConfigs.set(project.modkitManifestContributions().mixinConfigs)
+                    task.fabricDatagenEntrypoints.set(project.modkitManifestContributions().fabricDatagenEntrypoints)
                     task.outputDir.set(outputDir)
                 }
         }

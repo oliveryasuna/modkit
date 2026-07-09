@@ -20,4 +20,11 @@ public abstract class ModkitManifestContributions {
      */
     public abstract val mixinConfigs: SetProperty<String>
 
+    /**
+     * Fully-qualified `DataGeneratorEntrypoint` class names, published by
+     * `datagen`. `metadata` folds them into fabric.mod.json
+     * `entrypoints.fabric-datagen` (NeoForge datagen needs no manifest entry).
+     */
+    public abstract val fabricDatagenEntrypoints: SetProperty<String>
+
 }

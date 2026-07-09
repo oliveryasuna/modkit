@@ -69,6 +69,9 @@ internal abstract class GenerateManifestTask : DefaultTask() {
     abstract val mixinConfigs: SetProperty<String>
 
     @get:Input
+    abstract val fabricDatagenEntrypoints: SetProperty<String>
+
+    @get:Input
     abstract val rawOverrides: MapProperty<String, Any>
 
     @get:OutputDirectory
@@ -92,6 +95,7 @@ internal abstract class GenerateManifestTask : DefaultTask() {
             entrypointsClient = entrypointsClient.get(),
             dependencies = dependencies.get(),
             mixinConfigs = mixinConfigs.get().sorted(),
+            fabricDatagenEntrypoints = fabricDatagenEntrypoints.get().sorted(),
             rawOverrides = rawOverrides.get()
         )
 

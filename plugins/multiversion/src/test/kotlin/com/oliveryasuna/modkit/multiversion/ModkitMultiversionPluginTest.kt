@@ -5,7 +5,8 @@ import com.oliveryasuna.modkit.multiversion.extension.MultiversionSpec
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Test
 
 class ModkitMultiversionPluginTest {

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 import java.io.File
-import java.util.Properties
+import java.util.*
 
 /**
  * Functional (Gradle TestKit) test for the `multiversion` module.

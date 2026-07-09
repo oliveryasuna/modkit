@@ -38,6 +38,7 @@ internal object ManifestBuilders {
         val entrypoints = orderedConfig(format)
         if(inputs.entrypointsMain.isNotEmpty()) entrypoints.set<Any?>("main", ArrayList(inputs.entrypointsMain))
         if(inputs.entrypointsClient.isNotEmpty()) entrypoints.set<Any?>("client", ArrayList(inputs.entrypointsClient))
+        if(inputs.fabricDatagenEntrypoints.isNotEmpty()) entrypoints.set<Any?>("fabric-datagen", ArrayList(inputs.fabricDatagenEntrypoints))
         if(!entrypoints.isEmpty) root.set<Any?>("entrypoints", entrypoints)
 
         if(inputs.mixinConfigs.isNotEmpty()) root.set<Any?>("mixins", ArrayList(inputs.mixinConfigs))

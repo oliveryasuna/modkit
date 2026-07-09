@@ -24,5 +24,6 @@ internal data class ManifestInputs(
     val entrypointsClient: List<String>,
     val dependencies: Map<String, DepConstraint>,
     val mixinConfigs: List<String>,
+    val fabricDatagenEntrypoints: List<String>,
     val rawOverrides: Map<String, Any>
 )

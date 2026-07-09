@@ -12,6 +12,7 @@ class ManifestBuildersTest {
     private fun inputs(
         icon: String? = "assets/mymod/icon.png",
         mixinConfigs: List<String> = emptyList(),
+        fabricDatagenEntrypoints: List<String> = emptyList(),
         rawOverrides: Map<String, Any> = emptyMap()
     ): ManifestInputs =
         ManifestInputs(
@@ -34,6 +35,7 @@ class ManifestBuildersTest {
                 "opt_lib" to DepConstraint(">=2.0", DepConstraint.Kind.OPTIONAL)
             ),
             mixinConfigs = mixinConfigs,
+            fabricDatagenEntrypoints = fabricDatagenEntrypoints,
             rawOverrides = rawOverrides
         )
 
@@ -140,6 +142,21 @@ class ManifestBuildersTest {
 
         val withoutMixins = parseJson(ManifestBuilders.buildFabricModJson(inputs()))
         assertFalse(withoutMixins.contains("mixins"))
+    }
+
+    @Test
+    fun `fabric folds datagen entrypoints into the fabric-datagen entrypoint list`() {
+        val withDatagen = parseJson(
+            ManifestBuilders.buildFabricModJson(
+                inputs(fabricDatagenEntrypoints = listOf("com.example.MyDataGenerator"))
+            )
+        )
+        val entrypoints = withDatagen.get<Config>("entrypoints")
+        assertEquals(listOf("com.example.MyDataGenerator"), entrypoints.get<List<String>>("fabric-datagen"))
+
+        // Absent when nothing publishes an entrypoint.
+        val withoutDatagen = parseJson(ManifestBuilders.buildFabricModJson(inputs()))
+        assertFalse(withoutDatagen.get<Config>("entrypoints").contains("fabric-datagen"))
     }
 
     @Test
