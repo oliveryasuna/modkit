@@ -11,6 +11,7 @@ class ManifestBuildersTest {
 
     private fun inputs(
         icon: String? = "assets/mymod/icon.png",
+        mixinConfigs: List<String> = emptyList(),
         rawOverrides: Map<String, Any> = emptyMap()
     ): ManifestInputs =
         ManifestInputs(
@@ -32,6 +33,7 @@ class ManifestBuildersTest {
                 "some_lib" to DepConstraint(">=1.0", DepConstraint.Kind.REQUIRED),
                 "opt_lib" to DepConstraint(">=2.0", DepConstraint.Kind.OPTIONAL)
             ),
+            mixinConfigs = mixinConfigs,
             rawOverrides = rawOverrides
         )
 
@@ -122,6 +124,39 @@ class ManifestBuildersTest {
 
         assertEquals("[2,)", cfg.get<String>("loaderVersion"))
         assertEquals("value", cfg.get<String>("custom"))
+    }
+
+    @Test
+    fun `fabric lists mixin configs when present and omits them when empty`() {
+        val withMixins = parseJson(
+            ManifestBuilders.buildFabricModJson(
+                inputs(mixinConfigs = listOf("mymod.mixins.json", "mymod-client.mixins.json"))
+            )
+        )
+        assertEquals(
+            listOf("mymod.mixins.json", "mymod-client.mixins.json"),
+            withMixins.get<List<String>>("mixins")
+        )
+
+        val withoutMixins = parseJson(ManifestBuilders.buildFabricModJson(inputs()))
+        assertFalse(withoutMixins.contains("mixins"))
+    }
+
+    @Test
+    fun `neoforge emits a mixins table per config when present and omits when empty`() {
+        val withMixins = parseToml(
+            ManifestBuilders.buildNeoForgeToml(
+                inputs(mixinConfigs = listOf("mymod.mixins.json", "mymod-client.mixins.json"))
+            )
+        )
+        val mixins = withMixins.get<List<Config>>("mixins")
+        assertEquals(
+            listOf("mymod.mixins.json", "mymod-client.mixins.json"),
+            mixins.map { it.get<String>("config") }
+        )
+
+        val withoutMixins = parseToml(ManifestBuilders.buildNeoForgeToml(inputs()))
+        assertFalse(withoutMixins.contains("mixins"))
     }
 
     @Test

@@ -40,6 +40,8 @@ internal object ManifestBuilders {
         if(inputs.entrypointsClient.isNotEmpty()) entrypoints.set<Any?>("client", ArrayList(inputs.entrypointsClient))
         if(!entrypoints.isEmpty) root.set<Any?>("entrypoints", entrypoints)
 
+        if(inputs.mixinConfigs.isNotEmpty()) root.set<Any?>("mixins", ArrayList(inputs.mixinConfigs))
+
         val depends = orderedConfig(format)
         inputs.minecraftVersion?.let { depends.set<Any?>(listOf("minecraft"), it) }
         val recommends = orderedConfig(format)
@@ -74,6 +76,16 @@ internal object ManifestBuilders {
         if(inputs.authors.isNotEmpty()) mod.set<Any?>("authors", inputs.authors.joinToString(", "))
         inputs.icon?.let { mod.set<Any?>("logoFile", it) }
         root.set<Any?>("mods", arrayListOf(mod))
+
+        if(inputs.mixinConfigs.isNotEmpty()) {
+            val mixinEntries = ArrayList<Config>()
+            for(config in inputs.mixinConfigs) {
+                val entry = orderedConfig(format)
+                entry.set<Any?>("config", config)
+                mixinEntries.add(entry)
+            }
+            root.set<Any?>(listOf("mixins"), mixinEntries)
+        }
 
         val entries = ArrayList<Config>()
         inputs.minecraftVersion?.let { entries.add(dependencyEntry(format, "minecraft", "required", it)) }

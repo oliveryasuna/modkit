@@ -23,5 +23,6 @@ internal data class ManifestInputs(
     val entrypointsMain: List<String>,
     val entrypointsClient: List<String>,
     val dependencies: Map<String, DepConstraint>,
+    val mixinConfigs: List<String>,
     val rawOverrides: Map<String, Any>
 )

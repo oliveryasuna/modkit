@@ -5,6 +5,7 @@ import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.metadata.extension.MetadataSpec
 import com.oliveryasuna.modkit.plugin.activeLoader
 import com.oliveryasuna.modkit.plugin.applyModkitCore
+import com.oliveryasuna.modkit.plugin.modkitManifestContributions
 import com.oliveryasuna.modkit.plugin.registerBlock
 import com.oliveryasuna.modkit.plugin.wireIntoCheck
 import org.gradle.api.Plugin
@@ -59,6 +60,7 @@ public class ModkitMetadataPlugin : Plugin<Project> {
                     task.description = "Generates fabric.mod.json from the Modkit model."
                     configureIdentity(task, modkit, metadata, minecraftVersion)
                     task.rawOverrides.set(metadata.fabric.raw)
+                    task.mixinConfigs.set(project.modkitManifestContributions().mixinConfigs)
                     task.outputDir.set(outputDir)
                 }
 
@@ -68,6 +70,7 @@ public class ModkitMetadataPlugin : Plugin<Project> {
                     task.description = "Generates neoforge.mods.toml from the Modkit model."
                     configureIdentity(task, modkit, metadata, minecraftVersion)
                     task.rawOverrides.set(metadata.neoforge.raw)
+                    task.mixinConfigs.set(project.modkitManifestContributions().mixinConfigs)
                     task.outputDir.set(outputDir)
                 }
         }

@@ -2,6 +2,7 @@ package com.oliveryasuna.modkit.plugin
 
 import com.oliveryasuna.modkit.core.extension.McLoader
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
+import com.oliveryasuna.modkit.core.manifest.ModkitManifestContributions
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -35,3 +36,12 @@ public fun Project.wireIntoCheck(task: TaskProvider<out Task>) {
         tasks.named("check") { it.dependsOn(task) }
     }
 }
+
+/**
+ * The shared per-project [ModkitManifestContributions] registry, where sibling
+ * plugins publish generated data that `metadata` folds into the mod manifests.
+ * Created lazily on first access; safe to call from any modkit plugin.
+ */
+public fun Project.modkitManifestContributions(): ModkitManifestContributions =
+    extensions.findByType(ModkitManifestContributions::class.java)
+    ?: extensions.create("modkitManifestContributions", ModkitManifestContributions::class.java)

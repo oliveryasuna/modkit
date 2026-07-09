@@ -6,6 +6,7 @@ import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.SetProperty
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
@@ -65,6 +66,9 @@ internal abstract class GenerateManifestTask : DefaultTask() {
     abstract val dependencies: MapProperty<String, DepConstraint>
 
     @get:Input
+    abstract val mixinConfigs: SetProperty<String>
+
+    @get:Input
     abstract val rawOverrides: MapProperty<String, Any>
 
     @get:OutputDirectory
@@ -87,6 +91,7 @@ internal abstract class GenerateManifestTask : DefaultTask() {
             entrypointsMain = entrypointsMain.get(),
             entrypointsClient = entrypointsClient.get(),
             dependencies = dependencies.get(),
+            mixinConfigs = mixinConfigs.get().sorted(),
             rawOverrides = rawOverrides.get()
         )
 
