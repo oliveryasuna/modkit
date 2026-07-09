@@ -22,10 +22,19 @@ public fun <T : Any> ModkitExtension.registerBlock(name: String, type: Class<T>)
 /**
  * Resolves the active loader from the `modkit.loader` property, surfacing a bad
  * value as a Gradle build failure. Read eagerly in `apply()`.
+ *
+ * Uses [Project.findProperty] rather than `providers.gradleProperty` so it sees
+ * an **extra property** as well as a Gradle property
+ * (`gradle.properties`/`-P`). `multiversion` sets `modkit.loader` as a per-node
+ * extra property (derived from the Stonecutter node name) via a Settings
+ * `beforeProject` hook, which cannot be expressed as a global Gradle property;
+ * a single-loader project still sets it in `gradle.properties`. Both flow
+ * through `findProperty`. Read at configuration time only (never held by a
+ * task), so this stays cache-safe.
  */
 public fun Project.activeLoader(): McLoader? =
     try {
-        McLoader.fromProperty(providers.gradleProperty(McLoader.PROPERTY).orNull)
+        McLoader.fromProperty(findProperty(McLoader.PROPERTY)?.toString())
     } catch(e: IllegalArgumentException) {
         throw GradleException(e.message ?: "Invalid '${McLoader.PROPERTY}' value", e)
     }

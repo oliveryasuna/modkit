@@ -38,7 +38,7 @@ public class ModkitDependenciesPlugin : Plugin<Project> {
         val mod = project.createBucket(MOD_CONFIGURATION)
         val nest = project.createBucket(NEST_CONFIGURATION)
 
-        // Route onto the applied base. Exactly one ever is; neither → no-op.
+        // Route onto the applied base. Exactly one ever is; neither -> no-op.
         project.pluginManager.withPlugin("fabric-loom") {
             routeInto(project, mod, "modImplementation")
             routeInto(project, nest, "include")

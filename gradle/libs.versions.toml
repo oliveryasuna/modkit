@@ -35,6 +35,11 @@ asm = "9.9"
 # Modrinth, CurseForge, GitHub, and Discord from the shared model.
 mod-publish-plugin = "2.1.1"
 
+# Multi-version — wrapped by :plugins:multiversion. Stonecutter expands the
+# version x loader matrix into per-node subprojects (settings-time) and provides
+# the source preprocessor. Requires Gradle 9+.
+stonecutter = "0.9.6"
+
 # Test
 junit = "6.1.1"
 
@@ -62,6 +67,10 @@ asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 # Publishing (real plugin artifact; carries its plugin descriptor so it can be
 # applied by id)
 mod-publish-plugin = { module = "me.modmuss50.mod-publish-plugin:me.modmuss50.mod-publish-plugin.gradle.plugin", version.ref = "mod-publish-plugin" }
+
+# Multi-version tooling (Stonecutter). Compiled against so :plugins:multiversion
+# can call its settings/project extensions; also carries its plugin descriptor.
+stonecutter = { module = "dev.kikugie:stonecutter", version.ref = "stonecutter" }
 
 # Test
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }

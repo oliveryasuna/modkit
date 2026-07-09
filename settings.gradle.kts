@@ -18,6 +18,10 @@ dependencyResolutionManagement {
         maven("https://maven.neoforged.net/releases") {
             content { includeGroupByRegex("net\\.neoforged.*") }
         }
+        // Stonecutter (multi-version tooling) wrapped by :plugins:multiversion.
+        maven("https://maven.kikugie.dev/releases") {
+            content { includeGroupByRegex("dev\\.kikugie.*") }
+        }
     }
 }
 
@@ -41,3 +45,4 @@ include("plugins:publish")
 include("plugins:run")
 include("plugins:ci")
 include("plugins:dependencies")
+include("plugins:multiversion")

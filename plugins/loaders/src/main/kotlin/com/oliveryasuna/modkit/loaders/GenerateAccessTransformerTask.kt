@@ -7,7 +7,7 @@ import org.gradle.api.tasks.*
 
 /**
  * Generates a NeoForge access transformer from the project's access wideners
- * (Modkit's write-once feature). Pure function of its inputs → cacheable and
+ * (Modkit's write-once feature). Pure function of its inputs -> cacheable and
  * configuration-cache safe.
  */
 @CacheableTask
