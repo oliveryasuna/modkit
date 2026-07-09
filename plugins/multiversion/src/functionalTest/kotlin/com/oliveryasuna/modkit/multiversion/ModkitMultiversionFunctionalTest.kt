@@ -193,6 +193,113 @@ class ModkitMultiversionFunctionalTest {
 
     private fun quote(s: String): String = "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 
+    /**
+     * Single-mod-at-root layout (non-monorepo): `root { }` instead of
+     * `mod(path) { }`. Nodes register directly under the root (`:<node>`); the
+     * central script + controller live at the repository root.
+     */
+    private fun writeRootFixture() {
+        write(
+            "gradle.properties",
+            """
+            org.gradle.jvmargs=-Xmx2G
+            org.gradle.configuration-cache=false
+            """
+        )
+
+        val classpathFiles = pluginClasspath.joinToString(",\n            ") {
+            "files(${quote(it.absolutePath)})"
+        }
+        write(
+            "settings.gradle.kts",
+            """
+            import com.oliveryasuna.modkit.core.extension.McLoader
+
+            pluginManagement {
+                repositories {
+                    gradlePluginPortal()
+                    mavenCentral()
+                    maven("https://maven.fabricmc.net/")
+                    maven("https://maven.neoforged.net/releases/")
+                    maven("https://maven.kikugie.dev/releases")
+                    maven("https://maven.kikugie.dev/snapshots")
+                }
+            }
+
+            dependencyResolutionManagement {
+                repositories {
+                    gradlePluginPortal()
+                    mavenCentral()
+                    maven("https://maven.fabricmc.net/")
+                    maven("https://maven.neoforged.net/releases/")
+                    maven("https://maven.kikugie.dev/releases")
+                    maven("https://maven.kikugie.dev/snapshots")
+                }
+            }
+
+            buildscript {
+                repositories {
+                    gradlePluginPortal()
+                    mavenCentral()
+                    maven("https://maven.fabricmc.net/")
+                    maven("https://maven.neoforged.net/releases/")
+                    maven("https://maven.kikugie.dev/releases")
+                    maven("https://maven.kikugie.dev/snapshots")
+                }
+                dependencies {
+                    classpath(
+                        files(
+                            $classpathFiles
+                        )
+                    )
+                }
+            }
+
+            apply(plugin = "com.oliveryasuna.modkit.multiversion.settings")
+
+            configure<com.oliveryasuna.modkit.multiversion.settings.ModkitVersionsSettings> {
+                root {
+                    version("1.21.1", McLoader.FABRIC, McLoader.NEOFORGE)
+                }
+            }
+
+            rootProject.name = "consumer"
+            """
+        )
+
+        // Root controller + central script live at the repository root.
+        write(
+            "stonecutter.gradle.kts",
+            """
+            plugins {
+                id("dev.kikugie.stonecutter")
+            }
+
+            stonecutter active "1.21.1-fabric"
+            """
+        )
+        write(
+            "build.gradle.kts",
+            """
+            plugins {
+                id("com.oliveryasuna.modkit.multiversion")
+            }
+
+            modkit {
+                modId.set("mymod")
+            }
+
+            tasks.register("printInfo") {
+                val node = stonecutter.current.project
+                val loader = findProperty("modkit.loader")?.toString()
+                doLast {
+                    println("NODE=" + node + " LOADER=" + loader)
+                }
+            }
+            """
+        )
+    }
+
     // --- Tests ---
 
     @Test
@@ -243,5 +350,19 @@ class ModkitMultiversionFunctionalTest {
             second.output.contains("Reusing configuration cache.") || second.output.contains("reused"),
             "expected reuse on second run:\n" + second.output
         )
+    }
+
+    @Test
+    fun `root layout expands nodes under the root and bridges the loader`() {
+        writeRootFixture()
+
+        // Non-monorepo: nodes register directly under the root, not a subproject.
+        val projects = runner("projects", "-q").build()
+        assertTrue(projects.output.contains(":1.21.1-fabric"), projects.output)
+        assertTrue(projects.output.contains(":1.21.1-neoforge"), projects.output)
+        assertTrue(!projects.output.contains(":mods:"), projects.output)
+
+        val neoforge = runner(":1.21.1-neoforge:printInfo", "-q").build()
+        assertTrue(neoforge.output.contains("LOADER=neoforge"), neoforge.output)
     }
 }

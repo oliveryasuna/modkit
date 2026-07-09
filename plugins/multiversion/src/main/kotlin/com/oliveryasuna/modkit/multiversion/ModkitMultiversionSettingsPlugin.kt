@@ -14,8 +14,8 @@ import org.gradle.api.initialization.Settings
  *
  * The loader is derived from the node name and published as a per-node **extra
  * property** through a `beforeProject` hook — which runs before any node's
- * build script, so it is independent of plugin-application order and needs no global
- * Gradle property (a global one cannot vary per node in a single build).
+ * build script, so it is independent of plugin-application order and needs no
+ * global Gradle property (a global one cannot vary per node in a single build).
  */
 public class ModkitMultiversionSettingsPlugin : Plugin<Settings> {
 
@@ -25,7 +25,7 @@ public class ModkitMultiversionSettingsPlugin : Plugin<Settings> {
 
         // Node project path -> loader name, populated as the matrix is declared.
         val nodeLoaders = LinkedHashMap<String, String>()
-        settings.extensions.create("modkitVersions", ModkitVersionsSettings::class.java, stonecutter, nodeLoaders)
+        settings.extensions.create("modkitVersions", ModkitVersionsSettings::class.java, settings, stonecutter, nodeLoaders)
 
         settings.gradle.beforeProject { project ->
             nodeLoaders[project.path]?.let { loader ->
