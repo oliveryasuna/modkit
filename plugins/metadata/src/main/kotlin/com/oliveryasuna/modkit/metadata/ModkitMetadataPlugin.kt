@@ -22,13 +22,14 @@ public class ModkitMetadataPlugin : Plugin<Project> {
         metadata.validation.failOnMissingIcon.convention(true)
         metadata.validation.failOnInvalidSemver.convention(true)
         metadata.validation.failOnUndeclaredMixinConfig.convention(true)
+        metadata.validation.failOnMissingLicense.convention(true)
 
         // Choose the target loader eagerly from `modkit.loader` — only one
         // manifest is generated per invocation, for the active loader.
         val activeLoader = project.activeLoader()
 
         registerGenerate(project, modkit, metadata, activeLoader)
-        registerValidation(project, modkit, metadata)
+        registerValidation(project, modkit, metadata, activeLoader)
     }
 
     private fun registerGenerate(
@@ -112,18 +113,22 @@ public class ModkitMetadataPlugin : Plugin<Project> {
     private fun registerValidation(
         project: Project,
         modkit: ModkitExtension,
-        metadata: MetadataSpec
+        metadata: MetadataSpec,
+        activeLoader: McLoader?
     ) {
         val validate = project.tasks.register("validateModMetadata", ValidateModMetadataTask::class.java) { task ->
             task.group = "verification"
-            task.description = "Validates the resolved mod metadata (semver, icon, mixin configs)."
+            task.description = "Validates the resolved mod metadata (semver, icon, license, mixin configs)."
 
             task.version.set(modkit.version)
             task.icon.set(metadata.icon)
+            task.license.set(modkit.license)
+            task.neoForgeActive.set(activeLoader == McLoader.NEOFORGE)
             task.resourcesDir.set(project.layout.projectDirectory.dir("src/main/resources"))
             task.failOnMissingIcon.set(metadata.validation.failOnMissingIcon)
             task.failOnInvalidSemver.set(metadata.validation.failOnInvalidSemver)
             task.failOnUndeclaredMixinConfig.set(metadata.validation.failOnUndeclaredMixinConfig)
+            task.failOnMissingLicense.set(metadata.validation.failOnMissingLicense)
         }
 
         // Attach to `check` only where a lifecycle exists.

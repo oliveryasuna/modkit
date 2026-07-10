@@ -43,6 +43,7 @@ class ModkitMetadataPluginTest {
         assertTrue(validation.failOnMissingIcon.get())
         assertTrue(validation.failOnInvalidSemver.get())
         assertTrue(validation.failOnUndeclaredMixinConfig.get())
+        assertTrue(validation.failOnMissingLicense.get())
     }
 
     @Test

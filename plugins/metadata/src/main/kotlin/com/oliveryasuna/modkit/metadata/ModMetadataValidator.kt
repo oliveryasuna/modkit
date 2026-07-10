@@ -12,9 +12,12 @@ internal object ModMetadataValidator {
         version: String?,
         icon: String?,
         iconExists: Boolean,
+        license: String?,
+        isNeoForge: Boolean,
         failOnMissingIcon: Boolean,
         failOnInvalidSemver: Boolean,
-        failOnUndeclaredMixinConfig: Boolean
+        failOnUndeclaredMixinConfig: Boolean,
+        failOnMissingLicense: Boolean
     ): List<String> {
         val errors = ArrayList<String>()
 
@@ -22,6 +25,12 @@ internal object ModMetadataValidator {
             if(version == null || SemVer.parseOrNull(version) == null) {
                 errors.add("Mod version '$version' is not a valid semver (expected MAJOR.MINOR.PATCH).")
             }
+        }
+
+        // NeoForge requires a license in neoforge.mods.toml; without it the mod
+        // is rejected at startup (InvalidModFileException: Missing license).
+        if(failOnMissingLicense && isNeoForge && license.isNullOrBlank()) {
+            errors.add("NeoForge requires a license; set `modkit.license` (e.g. \"MIT\" or \"All Rights Reserved\").")
         }
 
         // "Missing icon" means declared-but-absent: only fail when an icon is

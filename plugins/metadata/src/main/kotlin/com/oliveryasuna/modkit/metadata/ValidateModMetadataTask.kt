@@ -22,8 +22,14 @@ internal abstract class ValidateModMetadataTask : DefaultTask() {
     @get:[Input Optional]
     abstract val icon: Property<String>
 
+    @get:[Input Optional]
+    abstract val license: Property<String>
+
     @get:Internal
     abstract val resourcesDir: DirectoryProperty
+
+    @get:Input
+    abstract val neoForgeActive: Property<Boolean>
 
     @get:Input
     abstract val failOnMissingIcon: Property<Boolean>
@@ -34,6 +40,9 @@ internal abstract class ValidateModMetadataTask : DefaultTask() {
     @get:Input
     abstract val failOnUndeclaredMixinConfig: Property<Boolean>
 
+    @get:Input
+    abstract val failOnMissingLicense: Property<Boolean>
+
     @TaskAction
     fun validate() {
         val iconName = icon.orNull
@@ -43,9 +52,12 @@ internal abstract class ValidateModMetadataTask : DefaultTask() {
             version = version.orNull,
             icon = iconName,
             iconExists = iconExists,
+            license = license.orNull,
+            isNeoForge = neoForgeActive.get(),
             failOnMissingIcon = failOnMissingIcon.get(),
             failOnInvalidSemver = failOnInvalidSemver.get(),
-            failOnUndeclaredMixinConfig = failOnUndeclaredMixinConfig.get()
+            failOnUndeclaredMixinConfig = failOnUndeclaredMixinConfig.get(),
+            failOnMissingLicense = failOnMissingLicense.get()
         )
 
         if(errors.isNotEmpty()) {
