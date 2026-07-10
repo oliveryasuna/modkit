@@ -63,6 +63,14 @@ internal fun configureNeoForge(
         val neoForge = project.extensions.getByType(NeoForgeExtension::class.java)
         neoForge.setVersion(version)
 
+        // Register the mod with its source set. MDG uses this to place the
+        // mod's classes on the dev-run classpath; without it the mod is scanned
+        // from the manifest but its mixin classes cannot be resolved at runtime
+        // (NeoForge's mixin service fails PREPARE with ClassNotFoundException).
+        val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+        val main = sourceSets.getByName("main")
+        val mod = neoForge.mods.register(modkit.modId.get()) { it.sourceSet(main) }
+
         // Feed the generated AT to MDG (task output -> carries the dependency).
         neoForge.accessTransformers.from(generateAccessTransformer.flatMap { it.accessTransformer })
 
@@ -80,12 +88,13 @@ internal fun configureNeoForge(
         // Fabric/NeoForge divergence is normalized into one uniform `client`
         // source set.
         if(splitClient) {
-            val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
-            val main = sourceSets.getByName("main")
             val client = sourceSets.create("client")
             neoForge.addModdingDependenciesTo(client)
             client.compileClasspath += main.output
             client.runtimeClasspath += main.output
+            // The client source set is part of the mod too, so its classes are
+            // on the run classpath alongside main's.
+            mod.configure { it.sourceSet(client) }
             project.tasks.named("jar", Jar::class.java) { it.from(client.output) }
         }
     }
