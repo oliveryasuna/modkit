@@ -1,0 +1,5 @@
+.gradle/
+build/
+versions/*/build/
+run/
+.cache/
