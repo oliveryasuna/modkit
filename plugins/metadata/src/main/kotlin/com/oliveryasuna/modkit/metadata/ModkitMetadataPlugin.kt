@@ -73,12 +73,16 @@ public class ModkitMetadataPlugin : Plugin<Project> {
                 }
         }
 
-        // The manifest is common -> main source set. Adding the gen dir as a
-        // resource source (via the task's output provider) infers the task
-        // dependency so processResources picks the manifest up.
+        // The manifest is common -> main source set. Add the gen dir as a
+        // resource source so it is packaged, and wire processResources to the
+        // generate task EXPLICITLY: the provider-based srcDir dependency is not
+        // reliably inferred once a loader base (Loom/MDG) rewires the resource
+        // pipeline, which would otherwise ship a jar with no manifest.
         project.pluginManager.withPlugin("java-base") {
             val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
-            sourceSets.getByName("main").resources.srcDir(generateTask.flatMap { it.outputDir })
+            val main = sourceSets.getByName("main")
+            main.resources.srcDir(generateTask.flatMap { it.outputDir })
+            project.tasks.named(main.processResourcesTaskName) { it.dependsOn(generateTask) }
         }
     }
 

@@ -57,4 +57,25 @@ class ModkitMetadataPluginTest {
         assertNull(project.tasks.findByName("generateNeoForgeToml"))
     }
 
+    @Test
+    fun `processResources depends on the generate task so the manifest is packaged`() {
+        // A provider-based resources.srcDir does not reliably infer this
+        // dependency once a loader base rewires the resource pipeline, so the
+        // plugin must wire it explicitly — otherwise the jar ships with no
+        // manifest and the mod cannot load.
+        val project = ProjectBuilder.builder().build()
+        project.pluginManager.apply("java")
+        project.extensions.extraProperties.set("modkit.loader", "fabric")
+        project.pluginManager.apply(ModkitMetadataPlugin::class.java)
+
+        val processResources = project.tasks.getByName("processResources")
+        val generate = project.tasks.getByName("generateFabricModJson")
+        val dependencies = processResources.taskDependencies.getDependencies(processResources)
+
+        assertTrue(
+            dependencies.contains(generate),
+            "processResources must depend on generateFabricModJson so the manifest is generated before packaging"
+        )
+    }
+
 }
