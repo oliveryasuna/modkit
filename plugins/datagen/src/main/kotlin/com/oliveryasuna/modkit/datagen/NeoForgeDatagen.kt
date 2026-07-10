@@ -57,6 +57,23 @@ internal fun configureNeoForgeDatagen(project: Project, modkit: ModkitExtension,
     project.pluginManager.withPlugin("java-base") {
         val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
         val main = sourceSets.getByName("main")
+
+        // Tell the generator about the mod's hand-authored resource roots so
+        // providers that validate against existing files -- e.g., NeoForge's
+        // ItemModelProvider checking that an item's texture exists -- can find
+        // them. Use the main source set's resource dirs (NOT `projectDir/src/
+        // main/resources`, which is wrong under multiversion, where the node's
+        // resources are the shared root src), minus our own generated output.
+        // Resolved lazily so it reflects the fully-configured source set.
+        run.programArguments.addAll(
+            project.provider {
+                val generated = datagen.outputDir.get().asFile
+                main.resources.srcDirs
+                    .filter { it != generated }
+                    .flatMap { listOf("--existing", it.absolutePath) }
+            }
+        )
+
         main.resources.srcDir(datagen.outputDir)
         main.resources.exclude(".cache/**")
     }
