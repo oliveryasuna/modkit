@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 plugins {
     // Pure model/config module → stays on the repo-wide Java 17 target.
     id("modkit.plugin-conventions")
@@ -11,6 +13,11 @@ gradlePlugin {
             displayName = "Modkit Publish Plugin"
             description = "Publishes Modkit artifacts to Modrinth, CurseForge, GitHub, and Discord from the Modkit model."
             tags.set(listOf("modkit", "minecraft", "publishing"))
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }

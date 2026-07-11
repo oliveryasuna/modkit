@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 plugins {
     // Loader-wrapping module → Java 21 bytecode target (Loom/MDG floor).
     id("modkit.loader-plugin-conventions")
@@ -11,6 +13,11 @@ gradlePlugin {
             displayName = "Modkit Loaders Plugin"
             description = "Unifies Fabric Loom and ModDevGradle behind the Modkit model."
             tags.set(listOf("modkit", "minecraft", "fabric", "neoforge"))
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }

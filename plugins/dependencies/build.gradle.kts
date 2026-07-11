@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 plugins {
     // Facade-only: routes by configuration *name* (modImplementation/include/
     // jarJar), never touching Loom/MDG types → stays on the repo-wide Java 17
@@ -13,6 +15,11 @@ gradlePlugin {
             displayName = "Modkit Dependencies Plugin"
             description = "Unifies mod-dependency declaration, jar-in-jar nesting, and mod repositories across Fabric Loom and ModDevGradle."
             tags.set(listOf("modkit", "minecraft", "dependencies"))
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }

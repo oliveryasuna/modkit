@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 plugins {
     id("modkit.plugin-conventions")
 }
@@ -10,6 +12,11 @@ gradlePlugin {
             displayName = "Modkit Core Plugin"
             description = "Common functionality for all other Modkit plugins."
             tags.set(listOf("modkit", "core"))
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }

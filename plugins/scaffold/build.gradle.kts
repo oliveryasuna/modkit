@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 plugins {
     // Text-only generator: writes settings/build scripts and example sources,
     // never touching Loom/MDG/Stonecutter tooling → stays on the repo-wide
@@ -13,6 +15,11 @@ gradlePlugin {
             displayName = "Modkit Scaffold Plugin"
             description = "Generates a working Modkit consumer project (settings, build script, example sources) for a chosen loader/version matrix."
             tags.set(listOf("modkit", "minecraft", "scaffold", "init"))
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }

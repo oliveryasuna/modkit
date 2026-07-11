@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 plugins {
     // Bundles Stonecutter, whose published variants are compiled for Java 21,
     // so a Java 17 module cannot link them (variant matching rejects it). This
@@ -15,6 +17,11 @@ gradlePlugin {
             displayName = "Modkit Multiversion Plugin"
             description = "Per-version overrides over Stonecutter's source preprocessor, driven by the Modkit model."
             tags.set(listOf("modkit", "minecraft", "stonecutter", "multiversion"))
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
         // Settings-side plugin: applied in settings.gradle.kts to expand the
         // version x loader matrix into per-node subprojects via Stonecutter.
@@ -24,6 +31,11 @@ gradlePlugin {
             displayName = "Modkit Multiversion Settings Plugin"
             description = "Expands the Modkit version x loader matrix into per-node Stonecutter subprojects (settings-time)."
             tags.set(listOf("modkit", "minecraft", "stonecutter", "multiversion"))
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }

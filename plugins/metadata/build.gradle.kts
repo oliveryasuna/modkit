@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 plugins {
     // Pure model/serialization module → stays on the repo-wide Java 17 target.
     id("modkit.plugin-conventions")
@@ -11,6 +13,11 @@ gradlePlugin {
             displayName = "Modkit Metadata Plugin"
             description = "Generates fabric.mod.json and neoforge.mods.toml from the Modkit model."
             tags.set(listOf("modkit", "minecraft"))
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }

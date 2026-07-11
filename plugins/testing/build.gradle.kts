@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 plugins {
     // Configures the NeoForge `gameTestServer` run via ModDevGradle's typed
     // extension, so it bundles MDG and inherits its Java 21 bytecode floor.
@@ -12,6 +14,11 @@ gradlePlugin {
             displayName = "Modkit Testing Plugin"
             description = "Sets up JUnit Platform for pure-logic tests and wires the NeoForge GameTest run."
             tags.set(listOf("modkit", "minecraft", "testing", "junit", "gametest"))
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }

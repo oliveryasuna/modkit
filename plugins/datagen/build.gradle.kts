@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 plugins {
     // Loader-wrapping module → Java 21 bytecode target (Loom/MDG floor).
     id("modkit.loader-plugin-conventions")
@@ -11,6 +13,11 @@ gradlePlugin {
             displayName = "Modkit Datagen Plugin"
             description = "Wires Minecraft data generation across Fabric Loom and ModDevGradle and routes generated output into resources."
             tags.set(listOf("modkit", "minecraft", "datagen"))
+            compatibility {
+                features {
+                    configurationCache = true
+                }
+            }
         }
     }
 }
