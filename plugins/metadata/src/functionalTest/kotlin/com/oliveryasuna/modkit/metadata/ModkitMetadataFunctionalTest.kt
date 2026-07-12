@@ -126,6 +126,32 @@ class ModkitMetadataFunctionalTest {
     }
 
     @Test
+    fun `validateModMetadata fails on a declared but missing icon`() {
+        settings()
+        projectDir.resolve("build.gradle.kts").writeText(
+            """
+            plugins {
+                id("java")
+                id("com.oliveryasuna.modkit.metadata")
+            }
+
+            modkit {
+                modId.set("mymod")
+                version.set("1.0.0")
+                metadata {
+                    // Declared, but no file created under src/main/resources.
+                    icon.set("assets/mymod/icon.png")
+                }
+            }
+            """.trimIndent()
+        )
+
+        val result = runner("validateModMetadata").buildAndFail()
+
+        assertTrue(result.output.contains("icon"), result.output)
+    }
+
+    @Test
     fun `configuration cache is reused across runs`() {
         settings()
         fabricBuild()

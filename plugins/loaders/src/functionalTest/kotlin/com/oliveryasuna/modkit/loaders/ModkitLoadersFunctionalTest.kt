@@ -301,4 +301,49 @@ class ModkitLoadersFunctionalTest {
         assertNotNull(result.task(":compileClientJava"), result.output)
     }
 
+    // --- Mappings scheme validation ---
+
+    @Test
+    fun `yarn mappings are rejected on NeoForge`() {
+        neoForgeFixtureSettings()
+        projectDir.resolve("build.gradle.kts").writeText(
+            """
+            plugins { id("com.oliveryasuna.modkit.loaders") }
+            modkit {
+                modId.set("mymod")
+                minecraft("1.21.1") { loaders.add(com.oliveryasuna.modkit.core.extension.McLoader.NEOFORGE) }
+                loaders {
+                    neoforge { version.set("21.1.235") }
+                    mappings { scheme.set(com.oliveryasuna.modkit.loaders.extension.MappingsScheme.YARN) }
+                }
+            }
+            """.trimIndent()
+        )
+
+        // The scheme is checked in the NeoForge base's afterEvaluate, before MDG
+        // is applied — so this fails at configuration with no Minecraft download.
+        val result = runner("help", "-Pmodkit.loader=neoforge").buildAndFail()
+
+        assertTrue(result.output.contains("Yarn mappings are not supported on NeoForge"), result.output)
+    }
+
+    // --- Config-cache on a real loader base ---
+
+    @Test
+    fun `configures a real Fabric base and stores a config cache entry without problems`() {
+        fabricFixtureSettings()
+        fabricFixtureBuild()
+
+        // `help` fully applies and configures Loom (plugin apply + afterEvaluate)
+        // without executing its heavy tasks. We assert modkit's real-base wiring
+        // is config-cache clean — the entry stores with no problems. (We do not
+        // assert *reuse*: Loom 1.17.13 recomputes its cache key each run, so a
+        // Loom-configured project stores a fresh entry rather than reusing one —
+        // an upstream trait, independent of modkit's own cache-safety.)
+        val result = runner("help", "-Pmodkit.loader=fabric", "--configuration-cache").build()
+
+        assertTrue(result.output.contains("Configuration cache entry stored."), result.output)
+        assertFalse(result.output.contains("problems were found storing the configuration cache"), result.output)
+    }
+
 }
