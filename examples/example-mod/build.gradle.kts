@@ -4,19 +4,19 @@ import com.oliveryasuna.modkit.dependencies.nest
 plugins {
     // Already on the classpath via the settings plugin (same artifact) — no version.
     id("com.oliveryasuna.modkit.multiversion")
-    id("com.oliveryasuna.modkit.loaders") version "0.1.0-SNAPSHOT"
-    id("com.oliveryasuna.modkit.metadata") version "0.1.0-SNAPSHOT"
-    id("com.oliveryasuna.modkit.mixins") version "0.1.0-SNAPSHOT"
-    id("com.oliveryasuna.modkit.dependencies") version "0.1.0-SNAPSHOT"
-    id("com.oliveryasuna.modkit.datagen") version "0.1.0-SNAPSHOT"
-    id("com.oliveryasuna.modkit.run") version "0.1.0-SNAPSHOT"
-    id("com.oliveryasuna.modkit.testing") version "0.1.0-SNAPSHOT"
+    id("com.oliveryasuna.modkit.loaders") version "0.2.0"
+    id("com.oliveryasuna.modkit.metadata") version "0.2.0"
+    id("com.oliveryasuna.modkit.mixins") version "0.2.0"
+    id("com.oliveryasuna.modkit.dependencies") version "0.2.0"
+    id("com.oliveryasuna.modkit.datagen") version "0.2.0"
+    id("com.oliveryasuna.modkit.run") version "0.2.0"
+    id("com.oliveryasuna.modkit.testing") version "0.2.0"
 }
 
 // The node supplies the Minecraft version and loader; derive both here.
 val mc: String = stonecutter.current.version
 val loaderName: String = stonecutter.current.project.substringAfterLast('-')
-val loader: McLoader = if (loaderName == "fabric") McLoader.FABRIC else McLoader.NEOFORGE
+val loader: McLoader = if(loaderName == "fabric") McLoader.FABRIC else McLoader.NEOFORGE
 
 modkit {
     modId.set("modkit_example")
@@ -33,10 +33,10 @@ modkit {
     loaders {
         fabric {
             loaderVersion.set("0.16.14")
-            apiVersion.set(if (mc == "1.21.1") "0.116.13+1.21.1" else "0.100.8+1.20.6")
+            apiVersion.set(if(mc == "1.21.1") "0.116.13+1.21.1" else "0.100.8+1.20.6")
         }
         neoforge {
-            version.set(if (mc == "1.21.1") "21.1.235" else "20.6.139")
+            version.set(if(mc == "1.21.1") "21.1.235" else "20.6.139")
         }
     }
 
