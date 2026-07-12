@@ -3,6 +3,7 @@ package com.oliveryasuna.modkit.testing
 import com.oliveryasuna.modkit.plugin.applyModkitCore
 import com.oliveryasuna.modkit.plugin.registerBlock
 import com.oliveryasuna.modkit.testing.extension.TestingSpec
+import net.fabricmc.loom.api.fabricapi.FabricApiExtension
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -16,9 +17,10 @@ import org.gradle.api.tasks.testing.Test
  *    no Minecraft classpath. Unconditional once a `java`/`java-base` plugin is
  *    present.
  *  - **GameTest** — when `testing.gametest` is `true`, wires the loader's
- *    GameTest run: NeoForge's `gameTestServer` run (composes with the `run`
- *    plugin, which also targets the run named `gametest`); Fabric has no
- *    GameTest run helper, so it warns and skips.
+ *    server-side GameTest run: NeoForge's `gameTestServer` run, and Fabric's
+ *    `gametest` run via Loom's `fabricApi.configureTests`. Both compose with
+ *    the `run` plugin, which also targets the run named `gametest`. Client
+ *    game tests (Fabric-only) are out of scope for this single-boolean toggle.
  *
  * This plugin never applies a loader base — it reacts to whichever one the
  * loaders plugin applied via `withPlugin`.
@@ -51,11 +53,11 @@ public class ModkitTestingPlugin : Plugin<Project> {
 
         // Loom is applied eagerly at `plugins { }` time, before the DSL runs,
         // so the read must be deferred to afterEvaluate (same reason run's
-        // Fabric path defers). Fabric has no GameTest run — warn and skip.
+        // Fabric path defers).
         project.pluginManager.withPlugin("fabric-loom") {
             project.afterEvaluate {
                 if(testing.gametest.getOrElse(false)) {
-                    project.logger.warn("modkit.testing: Fabric Loom has no GameTest run helper; `testing.gametest` is ignored on Fabric. Use NeoForge for GameTest runs.")
+                    configureFabricGameTest(project)
                 }
             }
         }
@@ -69,6 +71,24 @@ public class ModkitTestingPlugin : Plugin<Project> {
         }
         project.tasks.withType(Test::class.java).configureEach { test ->
             test.useJUnitPlatform()
+        }
+    }
+
+    private fun configureFabricGameTest(project: Project) {
+        val fabricApi = project.extensions.getByType(FabricApiExtension::class.java)
+        // Loom's `configureTests` wires Minecraft's GameTest framework. We
+        // enable only the server game tests (the `gametest` run, gathered into
+        // `build`) to mirror NeoForge's server-side `gameTestServer` run and
+        // keep `testing.gametest` a single boolean. Client game tests are left
+        // off: they launch a real client and require accepting the Minecraft
+        // EULA (Loom's `acceptGameTestEula`), which modkit will not do
+        // implicitly. Leaving `createSourceSet` at its default keeps the tests
+        // in the main source set (main `fabric.mod.json` entrypoint), so no
+        // extra wiring is needed. Verified against fabric-loom 1.17.13: the
+        // EULA is gated on the client run only, not the server `gametest` run.
+        fabricApi.configureTests { settings ->
+            settings.enableGameTests.set(true)
+            settings.enableClientGameTests.set(false)
         }
     }
 

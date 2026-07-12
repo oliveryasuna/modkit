@@ -22,11 +22,6 @@ gradlePlugin {
     }
 }
 
-gradlePlugin.plugins.all {
-    val ea = this as org.gradle.api.plugins.ExtensionAware
-    println("PROBE decl '${name}' exts: " + ea.extensions.extensionsSchema.elements.map { "${it.name}=${it.publicType}" })
-}
-
 dependencies {
     implementation(project(":libraries:plugin-support"))
 

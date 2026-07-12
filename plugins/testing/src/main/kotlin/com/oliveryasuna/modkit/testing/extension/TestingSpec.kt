@@ -12,10 +12,12 @@ import org.gradle.api.provider.Property
 public abstract class TestingSpec {
 
     /**
-     * Enables the loader's GameTest run. On NeoForge this configures a run
-     * named `gametest` of type `gameTestServer` (task `runGametest`); on Fabric
-     * it is a no-op with a warning, since Fabric Loom has no GameTest run
-     * helper. Default `false`.
+     * Enables the loader's server-side GameTest run. On NeoForge this
+     * configures a run named `gametest` of type `gameTestServer` (task
+     * `runGametest`); on Fabric it enables Loom's server game tests via
+     * `fabricApi.configureTests` (the `gametest` run). Client game tests
+     * (Fabric-only, and EULA-gated) are not exposed by this single boolean.
+     * Default `false`.
      */
     public abstract val gametest: Property<Boolean>
 

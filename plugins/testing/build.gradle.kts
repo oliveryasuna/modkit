@@ -12,7 +12,7 @@ gradlePlugin {
             id = "com.oliveryasuna.modkit.testing"
             implementationClass = "com.oliveryasuna.modkit.testing.ModkitTestingPlugin"
             displayName = "Modkit Testing Plugin"
-            description = "Sets up JUnit Platform for pure-logic tests and wires the NeoForge GameTest run."
+            description = "Sets up JUnit Platform for pure-logic tests and wires the Fabric and NeoForge GameTest runs."
             tags.set(listOf("modkit", "minecraft", "testing", "junit", "gametest"))
             compatibility {
                 features {
@@ -36,8 +36,10 @@ dependencies {
     runtimeOnly(project(":plugins:core"))
 
     // Wrapped loader tooling. Bundled so the plugin can select the NeoForge
-    // `gameTestServer` run type via MDG's typed extension; kept internal (no
-    // MDG types in testing's public API). Never applies a base — only
+    // `gameTestServer` run type via MDG's typed extension and enable Fabric's
+    // server game tests via Loom's `fabricApi.configureTests`; kept internal
+    // (no loader types in testing's public API). Never applies a base — only
     // configures the one the loaders plugin applied.
+    implementation(libs.fabric.loom)
     implementation(libs.moddev.gradle)
 }
