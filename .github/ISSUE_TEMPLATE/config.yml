@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions & usage help
+    url: https://github.com/oliveryasuna/modkit/discussions
+    about: Ask in Discussions — issues are for bugs and features.
+  - name: Documentation
+    url: https://mc.oliveryasuna.com/modkit/
+    about: Check the docs before filing.
+  - name: Security vulnerability
+    url: https://github.com/oliveryasuna/modkit/security/policy
+    about: Report privately per SECURITY.md — do not open a public issue.

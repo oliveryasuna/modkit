@@ -1,0 +1,37 @@
+name: Feature request
+description: Propose a new capability or DSL surface
+labels: [ "type: feature", "status: triage" ]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / motivation
+      description: What does Modkit make hard or impossible today?
+    validations: { required: true }
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: A DSL sketch or behavior description.
+      render: kotlin
+  - type: dropdown
+    id: plugin
+    attributes:
+      label: Which plugin
+      options: [ core, loaders, metadata, dependencies, run,
+                 datagen, mixins, testing, multiversion, scaffold, ci, publish ]
+  - type: dropdown
+    id: loader
+    attributes:
+      label: Loader relevance
+      options: [ "Fabric only", "NeoForge only",
+                 "Both / loader-agnostic" ]
+  - type: textarea
+    id: alternatives
+    attributes: { label: Alternatives considered }
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before submitting
+      options:
+        - { label: I searched issues and discussions., required: true }

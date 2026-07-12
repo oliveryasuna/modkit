@@ -1,0 +1,23 @@
+name: Documentation issue
+description: Something in the docs is wrong, missing, or unclear
+labels: [ "type: docs", "status: triage" ]
+body:
+  - type: input
+    id: url
+    attributes:
+      label: Page URL
+      placeholder: "https://mc.oliveryasuna.com/modkit/…"
+    validations: { required: true }
+  - type: dropdown
+    id: kind
+    attributes:
+      label: Kind of problem
+      options: [ Incorrect, Missing, Unclear, Typo ]
+    validations: { required: true }
+  - type: textarea
+    id: problem
+    attributes: { label: What's wrong? }
+    validations: { required: true }
+  - type: textarea
+    id: fix
+    attributes: { label: Suggested fix }

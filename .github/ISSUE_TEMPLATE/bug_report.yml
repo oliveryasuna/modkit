@@ -1,0 +1,56 @@
+name: Bug report
+description: Something in a Modkit plugin behaves incorrectly
+labels: [ "type: bug", "status: triage" ]
+body:
+  - type: markdown
+    attributes:
+      value: "Thanks for filing! Please search existing issues first."
+  - type: input
+    id: version
+    attributes:
+      label: Modkit version
+      placeholder: "0.1.0"
+    validations: { required: true }
+  - type: dropdown
+    id: plugin
+    attributes:
+      label: Plugin
+      description: Which plugin owns the bug?
+      options: [ core, loaders, metadata, dependencies, run,
+                 datagen, mixins, testing, multiversion, scaffold, ci, publish ]
+    validations: { required: true }
+  - type: dropdown
+    id: loader
+    attributes:
+      label: Loader(s) affected
+      options: [ Fabric, NeoForge, Both ]
+    validations: { required: true }
+  - type: input
+    id: mc-version
+    attributes: { label: Minecraft version(s) }
+    validations: { required: true }
+  - type: input
+    id: gradle-version
+    attributes: { label: Gradle version }
+    validations: { required: true }
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Minimal build.gradle.kts / settings.gradle.kts.
+      render: kotlin
+    validations: { required: true }
+  - type: input
+    id: repro-repo
+    attributes: { label: Repro repository, placeholder: "https://github.com/…" }
+  - type: textarea
+    id: logs
+    attributes: { label: Build scan / stacktrace, render: shell }
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: Before submitting
+      options:
+        - { label: I searched existing issues., required: true }
+        - { label: I reproduced this on the latest release., required: true }
+        - { label: My reproduction is minimal. }
