@@ -9,6 +9,14 @@ public abstract class MetadataSpec {
     public abstract val icon: Property<String>
     public abstract val environment: Property<String>
 
+    /**
+     * When `true`, expand `${version}`/`${modId}`/`${name}`/`${group}`/
+     * `${minecraft}` placeholders in the generated manifest's string values
+     * (including raw overrides). Off by default; an unknown token then fails
+     * the build. Leave off to emit any `${...}` literally.
+     */
+    public abstract val substituteTokens: Property<Boolean>
+
     @get:Nested
     public abstract val entrypoints: EntrypointsSpec
 

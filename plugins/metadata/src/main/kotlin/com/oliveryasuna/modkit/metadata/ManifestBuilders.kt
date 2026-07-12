@@ -57,6 +57,8 @@ internal object ManifestBuilders {
 
         mergeRaw(format, root, inputs.rawOverrides)
 
+        if(inputs.substituteTokens) TokenSubstitution.apply(root, TokenSubstitution.tokensFrom(inputs))
+
         return format.createWriter().writeToString(root)
     }
 
@@ -101,6 +103,8 @@ internal object ManifestBuilders {
         }
 
         mergeRaw(format, root, inputs.rawOverrides)
+
+        if(inputs.substituteTokens) TokenSubstitution.apply(root, TokenSubstitution.tokensFrom(inputs))
 
         return format.createWriter().writeToString(root)
     }

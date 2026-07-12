@@ -27,6 +27,9 @@ internal abstract class GenerateManifestTask : DefaultTask() {
     abstract val version: Property<String>
 
     @get:Input
+    abstract val modGroup: Property<String>
+
+    @get:Input
     abstract val displayName: Property<String>
 
     @get:[Input Optional]
@@ -74,6 +77,9 @@ internal abstract class GenerateManifestTask : DefaultTask() {
     @get:Input
     abstract val rawOverrides: MapProperty<String, Any>
 
+    @get:Input
+    abstract val substituteTokens: Property<Boolean>
+
     @get:OutputDirectory
     abstract val outputDir: DirectoryProperty
 
@@ -81,6 +87,7 @@ internal abstract class GenerateManifestTask : DefaultTask() {
         ManifestInputs(
             modId = modId.get(),
             version = version.get(),
+            group = modGroup.get(),
             displayName = displayName.get(),
             description = modDescription.orNull,
             authors = authors.get(),
@@ -96,7 +103,8 @@ internal abstract class GenerateManifestTask : DefaultTask() {
             dependencies = dependencies.get(),
             mixinConfigs = mixinConfigs.get().sorted(),
             fabricDatagenEntrypoints = fabricDatagenEntrypoints.get().sorted(),
-            rawOverrides = rawOverrides.get()
+            rawOverrides = rawOverrides.get(),
+            substituteTokens = substituteTokens.get()
         )
 
 }

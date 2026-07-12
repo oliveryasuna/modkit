@@ -19,6 +19,7 @@ public class ModkitMetadataPlugin : Plugin<Project> {
         val metadata = modkit.registerBlock("metadata", MetadataSpec::class.java)
 
         metadata.environment.convention("*")
+        metadata.substituteTokens.convention(false)
         metadata.validation.failOnMissingIcon.convention(true)
         metadata.validation.failOnInvalidSemver.convention(true)
         metadata.validation.failOnUndeclaredMixinConfig.convention(true)
@@ -97,6 +98,7 @@ public class ModkitMetadataPlugin : Plugin<Project> {
     ) {
         task.modId.set(modkit.modId)
         task.version.set(modkit.version)
+        task.modGroup.set(modkit.group)
         task.displayName.set(modkit.displayName)
         task.modDescription.set(modkit.description)
         task.authors.set(modkit.authors)
@@ -110,6 +112,7 @@ public class ModkitMetadataPlugin : Plugin<Project> {
         task.entrypointsMain.set(metadata.entrypoints.main)
         task.entrypointsClient.set(metadata.entrypoints.client)
         task.dependencies.set(metadata.dependsOn.constraints)
+        task.substituteTokens.set(metadata.substituteTokens)
     }
 
     private fun registerValidation(

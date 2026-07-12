@@ -4,6 +4,7 @@ import com.electronwill.nightconfig.core.Config
 import com.electronwill.nightconfig.json.JsonFormat
 import com.electronwill.nightconfig.toml.TomlFormat
 import com.oliveryasuna.modkit.metadata.extension.DepConstraint
+import org.gradle.api.GradleException
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -11,15 +12,19 @@ class ManifestBuildersTest {
 
     private fun inputs(
         icon: String? = "assets/mymod/icon.png",
+        description: String? = "A test mod",
         mixinConfigs: List<String> = emptyList(),
         fabricDatagenEntrypoints: List<String> = emptyList(),
-        rawOverrides: Map<String, Any> = emptyMap()
+        rawOverrides: Map<String, Any> = emptyMap(),
+        minecraftVersion: String? = "1.21.1",
+        substituteTokens: Boolean = false
     ): ManifestInputs =
         ManifestInputs(
             modId = "mymod",
             version = "1.0.0",
+            group = "com.example",
             displayName = "My Mod",
-            description = "A test mod",
+            description = description,
             authors = listOf("Alice", "Bob"),
             license = "MIT",
             icon = icon,
@@ -27,7 +32,7 @@ class ManifestBuildersTest {
             source = "https://example.com/src",
             issues = "https://example.com/issues",
             environment = "*",
-            minecraftVersion = "1.21.1",
+            minecraftVersion = minecraftVersion,
             entrypointsMain = listOf("com.example.Mod"),
             entrypointsClient = listOf("com.example.ClientMod"),
             dependencies = linkedMapOf(
@@ -36,7 +41,8 @@ class ManifestBuildersTest {
             ),
             mixinConfigs = mixinConfigs,
             fabricDatagenEntrypoints = fabricDatagenEntrypoints,
-            rawOverrides = rawOverrides
+            rawOverrides = rawOverrides,
+            substituteTokens = substituteTokens
         )
 
     private fun parseJson(text: String): Config =
@@ -199,6 +205,62 @@ class ManifestBuildersTest {
     fun `both loaders emit the mod id and version`() {
         assertTrue(ManifestBuilders.buildFabricModJson(inputs()).contains("mymod"))
         assertTrue(ManifestBuilders.buildNeoForgeToml(inputs()).contains("mymod"))
+    }
+
+    // --- Token substitution (opt-in) ---
+
+    @Test
+    fun `tokens are left literal when substitution is off`() {
+        val cfg = parseJson(
+            ManifestBuilders.buildFabricModJson(
+                inputs(description = "Build \${version}", substituteTokens = false)
+            )
+        )
+        assertEquals("Build \${version}", cfg.get<String>("description"))
+    }
+
+    @Test
+    fun `substitution expands all five tokens in string values including raw overrides`() {
+        val cfg = parseJson(
+            ManifestBuilders.buildFabricModJson(
+                inputs(
+                    description = "\${name} \${version} for \${minecraft}",
+                    rawOverrides = mapOf("custom" to mapOf("built" to "\${modId}@\${group}")),
+                    substituteTokens = true
+                )
+            )
+        )
+        assertEquals("My Mod 1.0.0 for 1.21.1", cfg.get<String>("description"))
+        assertEquals("mymod@com.example", cfg.get<String>(listOf("custom", "built")))
+    }
+
+    @Test
+    fun `substitution expands tokens in the neoforge toml too`() {
+        val toml = ManifestBuilders.buildNeoForgeToml(
+            inputs(description = "v\${version}", substituteTokens = true)
+        )
+        assertTrue(toml.contains("v1.0.0"), toml)
+        assertFalse(toml.contains("\${version}"), toml)
+    }
+
+    @Test
+    fun `an unknown token fails fast`() {
+        val ex = assertThrows(GradleException::class.java) {
+            ManifestBuilders.buildFabricModJson(
+                inputs(description = "\${bogus}", substituteTokens = true)
+            )
+        }
+        assertTrue(ex.message!!.contains("Unknown token '\${bogus}'"), ex.message)
+    }
+
+    @Test
+    fun `a token whose value is unavailable fails fast`() {
+        val ex = assertThrows(GradleException::class.java) {
+            ManifestBuilders.buildFabricModJson(
+                inputs(description = "\${minecraft}", minecraftVersion = null, substituteTokens = true)
+            )
+        }
+        assertTrue(ex.message!!.contains("unavailable"), ex.message)
     }
 
 }

@@ -10,6 +10,7 @@ import com.oliveryasuna.modkit.metadata.extension.DepConstraint
 internal data class ManifestInputs(
     val modId: String,
     val version: String,
+    val group: String,
     val displayName: String,
     val description: String?,
     val authors: List<String>,
@@ -25,5 +26,6 @@ internal data class ManifestInputs(
     val dependencies: Map<String, DepConstraint>,
     val mixinConfigs: List<String>,
     val fabricDatagenEntrypoints: List<String>,
-    val rawOverrides: Map<String, Any>
+    val rawOverrides: Map<String, Any>,
+    val substituteTokens: Boolean
 )
