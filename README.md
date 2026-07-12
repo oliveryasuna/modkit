@@ -1,6 +1,7 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/oliveryasuna/modkit/refs/heads/main/assets/banner-light.png">
   <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/oliveryasuna/modkit/refs/heads/main/assets/banner-dark.png">
+  <img alt="Banner" src="https://raw.githubusercontent.com/oliveryasuna/modkit/refs/heads/main/assets/banner-dark.png">
 </picture>
 
 # Modkit
