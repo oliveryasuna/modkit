@@ -169,5 +169,67 @@ class ModkitTestingFunctionalTest {
         assertTrue(result.output.contains("runGametest"), result.output)
     }
 
+    // --- Fabric GameTest: real Loom, applied directly by id (fabric-loom is on
+    // testing's runtime classpath). Loom's `fabricApi.configureTests` registers
+    // the server `gametest` run → task `runGametest`. ---
+
+    @Test
+    fun `gametest enables the Fabric server game test run`() {
+        write(
+            "settings.gradle.kts",
+            """
+            pluginManagement {
+                repositories {
+                    gradlePluginPortal()
+                    mavenCentral()
+                    maven("https://maven.fabricmc.net/")
+                }
+            }
+            dependencyResolutionManagement {
+                repositories {
+                    mavenCentral()
+                    maven("https://maven.fabricmc.net/")
+                }
+            }
+            rootProject.name = "consumer"
+            """
+        )
+        write(
+            "build.gradle.kts",
+            """
+            import net.fabricmc.loom.api.LoomGradleExtensionAPI
+
+            plugins {
+                // fabric-loom is on testing's runtime classpath (bundled), so it
+                // can be applied by id here without the loaders plugin.
+                id("fabric-loom") version "1.17.13"
+                id("com.oliveryasuna.modkit.testing")
+            }
+
+            val loom = extensions.getByType(LoomGradleExtensionAPI::class.java)
+
+            dependencies {
+                "minecraft"("com.mojang:minecraft:1.21.1")
+                "mappings"(loom.officialMojangMappings())
+                "modImplementation"("net.fabricmc:fabric-loader:0.16.10")
+                "modImplementation"("net.fabricmc.fabric-api:fabric-api:0.115.1+1.21.1")
+            }
+
+            modkit {
+                modId.set("mymod")
+                minecraft("1.21.1") { loaders.add(com.oliveryasuna.modkit.core.extension.McLoader.FABRIC) }
+                testing { gametest.set(true) }
+            }
+            """
+        )
+
+        // `configureTests` registers the server run named "gametest" → Loom task
+        // `runGametest`. `help --task` resolves it if it exists without launching
+        // the game.
+        val result = runner("help", "--task", "runGametest", "--stacktrace").build()
+
+        assertTrue(result.output.contains("runGametest"), result.output)
+    }
+
     private fun quote(s: String): String = "\"" + s.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 }
