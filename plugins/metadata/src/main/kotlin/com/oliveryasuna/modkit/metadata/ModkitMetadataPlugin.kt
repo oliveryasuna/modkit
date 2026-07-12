@@ -74,16 +74,18 @@ public class ModkitMetadataPlugin : Plugin<Project> {
                 }
         }
 
-        // The manifest is common -> main source set. Add the gen dir as a
+        // The manifest belongs to the common source set (`main` by default, or
+        // whatever `modkit.commonSourceSet` names). Add the gen dir as a
         // resource source so it is packaged, and wire processResources to the
         // generate task EXPLICITLY: the provider-based srcDir dependency is not
         // reliably inferred once a loader base (Loom/MDG) rewires the resource
         // pipeline, which would otherwise ship a jar with no manifest.
+        val commonSourceSet = project.commonSourceSet()
         project.pluginManager.withPlugin("java-base") {
             val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
-            val main = sourceSets.getByName("main")
-            main.resources.srcDir(generateTask.flatMap { it.outputDir })
-            project.tasks.named(main.processResourcesTaskName) { it.dependsOn(generateTask) }
+            val common = sourceSets.getByName(commonSourceSet)
+            common.resources.srcDir(generateTask.flatMap { it.outputDir })
+            project.tasks.named(common.processResourcesTaskName) { it.dependsOn(generateTask) }
         }
     }
 
@@ -124,7 +126,7 @@ public class ModkitMetadataPlugin : Plugin<Project> {
             task.icon.set(metadata.icon)
             task.license.set(modkit.license)
             task.neoForgeActive.set(activeLoader == McLoader.NEOFORGE)
-            task.resourcesDir.set(project.layout.projectDirectory.dir("src/main/resources"))
+            task.resourcesDir.set(project.layout.projectDirectory.dir("src/${project.commonSourceSet()}/resources"))
             task.failOnMissingIcon.set(metadata.validation.failOnMissingIcon)
             task.failOnInvalidSemver.set(metadata.validation.failOnInvalidSemver)
             task.failOnUndeclaredMixinConfig.set(metadata.validation.failOnUndeclaredMixinConfig)

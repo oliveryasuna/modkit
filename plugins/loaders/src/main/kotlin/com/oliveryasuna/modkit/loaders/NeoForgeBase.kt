@@ -23,7 +23,8 @@ internal fun configureNeoForge(
     project: Project,
     modkit: ModkitExtension,
     loaders: LoadersSpec,
-    splitClient: Boolean
+    splitClient: Boolean,
+    commonSourceSet: String
 ) {
     // Transpile access wideners to a NeoForge access transformer (write-once).
     // Registered eagerly so it exists regardless of the afterEvaluate path.
@@ -63,13 +64,19 @@ internal fun configureNeoForge(
         val neoForge = project.extensions.getByType(NeoForgeExtension::class.java)
         neoForge.setVersion(version)
 
-        // Register the mod with its source set. MDG uses this to place the
-        // mod's classes on the dev-run classpath; without it the mod is scanned
-        // from the manifest but its mixin classes cannot be resolved at runtime
-        // (NeoForge's mixin service fails PREPARE with ClassNotFoundException).
+        // Register the mod with its common source set. MDG uses this to place
+        // the mod's classes on the dev-run classpath; without it the mod is
+        // scanned from the manifest but its mixin classes cannot be resolved at
+        // runtime (NeoForge's mixin service fails PREPARE with
+        // ClassNotFoundException). The common source set is `main` by default,
+        // or whatever `modkit.commonSourceSet` names — it must already exist.
         val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
-        val main = sourceSets.getByName("main")
-        val mod = neoForge.mods.register(modkit.modId.get()) { it.sourceSet(main) }
+        val common = sourceSets.findByName(commonSourceSet)
+                     ?: throw GradleException(
+                         "modkit.commonSourceSet = '$commonSourceSet' but no such source set exists. " +
+                         "Create it in your build script (e.g. sourceSets.create(\"$commonSourceSet\")) or unset the property."
+                     )
+        val mod = neoForge.mods.register(modkit.modId.get()) { it.sourceSet(common) }
 
         // Feed the generated AT to MDG (task output -> carries the dependency).
         neoForge.accessTransformers.from(generateAccessTransformer.flatMap { it.accessTransformer })
@@ -88,10 +95,12 @@ internal fun configureNeoForge(
         // Fabric/NeoForge divergence is normalized into one uniform `client`
         // source set.
         if(splitClient) {
+            // Split-client requires commonSourceSet == main (enforced in the
+            // loaders plugin), so `common` here is the main source set.
             val client = sourceSets.create("client")
             neoForge.addModdingDependenciesTo(client)
-            client.compileClasspath += main.output
-            client.runtimeClasspath += main.output
+            client.compileClasspath += common.output
+            client.runtimeClasspath += common.output
             // The client source set is part of the mod too, so its classes are
             // on the run classpath alongside main's.
             mod.configure { it.sourceSet(client) }

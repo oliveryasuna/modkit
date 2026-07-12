@@ -41,9 +41,8 @@ class ModkitCorePluginTest {
     }
 
     @Test
-    fun `layout and authors defaults`() {
+    fun `authors defaults to empty`() {
         val ext = project().modkit
-        assertEquals("main", ext.layout.commonSourceSet.get())
         assertTrue(ext.authors.get().isEmpty())
     }
 

@@ -18,8 +18,6 @@ public class ModkitCorePlugin : Plugin<Project> {
             version.convention(project.provider { project.version.toString() })
             displayName.convention(modId)
             authors.convention(emptyList())
-
-            layout.commonSourceSet.convention("main")
         }
 
         // Per-target defaults applied as elements are created.

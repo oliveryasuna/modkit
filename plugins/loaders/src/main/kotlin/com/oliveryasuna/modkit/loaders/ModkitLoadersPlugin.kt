@@ -4,9 +4,8 @@ import com.oliveryasuna.modkit.core.extension.McLoader
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.loaders.extension.LoadersSpec
 import com.oliveryasuna.modkit.loaders.extension.MappingsScheme
-import com.oliveryasuna.modkit.plugin.activeLoader
-import com.oliveryasuna.modkit.plugin.applyModkitCore
-import com.oliveryasuna.modkit.plugin.registerBlock
+import com.oliveryasuna.modkit.plugin.*
+import org.gradle.api.GradleException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -33,11 +32,26 @@ public class ModkitLoadersPlugin : Plugin<Project> {
             .map { it.toBoolean() }
             .getOrElse(false)
 
+        // The common source set the base binds the mod to. Read eagerly for the
+        // same reason as splitClient (structural, pre-Loom-finalize).
+        val commonSourceSet = project.commonSourceSet()
+
+        // A non-`main` common source set combined with split-client is not
+        // supported: Loom's `splitEnvironmentSourceSets()` splits `main`
+        // specifically, so the two settings would disagree about which set is
+        // "common". Fail clearly rather than produce a broken split.
+        if(commonSourceSet != DEFAULT_COMMON_SOURCE_SET && splitClient) {
+            throw GradleException(
+                "modkit.commonSourceSet = '$commonSourceSet' cannot be combined with modkit.splitClient in v1 " +
+                "(split-client is anchored to the 'main' source set). Use one or the other."
+            )
+        }
+
         // Apply and configure the base for the active loader. Absent
         // property -> no base (diagnostics/model still work).
         when(activeLoader) {
-            McLoader.FABRIC -> configureFabric(project, modkit, loaders, splitClient)
-            McLoader.NEOFORGE -> configureNeoForge(project, modkit, loaders, splitClient)
+            McLoader.FABRIC -> configureFabric(project, modkit, loaders, splitClient, commonSourceSet)
+            McLoader.NEOFORGE -> configureNeoForge(project, modkit, loaders, splitClient, commonSourceSet)
             null -> Unit
         }
     }

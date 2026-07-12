@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/oliveryasuna/modkit/refs/heads/main/assets/banner-light.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/oliveryasuna/modkit/refs/heads/main/assets/banner-dark.png">
+</picture>
+
 # Modkit
 
 A suite of Gradle plugins for building multi-loader Minecraft mods from a single
@@ -5,7 +10,7 @@ model. Describe your mod once — identity, target versions, dependencies,
 metadata — and Modkit drives the per-loader tooling (Fabric via Loom, NeoForge
 via ModDevGradle) to produce a build for each.
 
-**Status: beta.** `0.2.0` is pending approval on the Gradle Plugin Portal. The
+**Status: beta.** `0.3.0` is pending approval on the Gradle Plugin Portal. The
 plugins are ready for early adopters; expect some churn before `1.0.0`. Found a
 bug or have feedback? [Open an issue](https://github.com/oliveryasuna/modkit/issues).
 

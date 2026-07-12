@@ -22,7 +22,7 @@ Each `(version, loader)` is a Stonecutter node (`versions/<mc>-<loader>`). The o
 Modkit is not published to the Gradle Plugin Portal yet, so publish it to your local Maven repository first, then build the example:
 
 ```sh
-# 1. From the repository root — publish Modkit 0.2.0 to ~/.m2
+# 1. From the repository root — publish Modkit 0.3.0 to ~/.m2
 cd ../..
 ./gradlew publishToMavenLocal
 

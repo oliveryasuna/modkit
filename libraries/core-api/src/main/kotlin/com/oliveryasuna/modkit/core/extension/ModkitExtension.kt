@@ -20,19 +20,12 @@ public abstract class ModkitExtension {
     public abstract val urls: ModkitUrls
 
     @get:Nested
-    public abstract val layout: ModkitLayout
-
-    @get:Nested
     public abstract val jvm: ModkitJvm
 
     public abstract val targets: NamedDomainObjectContainer<McTarget>
 
     public fun urls(action: Action<in ModkitUrls>) {
         action.execute(urls)
-    }
-
-    public fun layout(action: Action<in ModkitLayout>) {
-        action.execute(layout)
     }
 
     public fun jvm(action: Action<in ModkitJvm>) {

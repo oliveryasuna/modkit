@@ -73,6 +73,56 @@ class ModkitLoadersFunctionalTest {
         assertTrue(second.output.contains("Reusing configuration cache."), second.output)
     }
 
+    // --- commonSourceSet property (light: failures fire during configuration,
+    // before any loader base does real work) ---
+
+    @Test
+    fun `commonSourceSet combined with splitClient fails fast`() {
+        settings()
+        buildFile()
+
+        // The B1 conflict is checked in the plugin's apply(), before any base is
+        // dispatched — so no Minecraft download.
+        val result = runner(
+            "modkitLoaderInfo",
+            "-Pmodkit.commonSourceSet=shared",
+            "-Pmodkit.splitClient=true"
+        ).buildAndFail()
+
+        assertTrue(
+            result.output.contains("modkit.commonSourceSet = 'shared' cannot be combined with modkit.splitClient"),
+            result.output
+        )
+    }
+
+    @Test
+    fun `a missing common source set fails with a clear message`() {
+        settings()
+        // Fabric base, commonSourceSet names a source set that does not exist.
+        // configureFabric resolves it eagerly and throws before Loom resolves
+        // Minecraft.
+        projectDir.resolve("build.gradle.kts").writeText(
+            """
+            plugins {
+                id("base")
+                id("com.oliveryasuna.modkit.loaders")
+            }
+
+            modkit {
+                modId.set("mymod")
+                minecraft("1.21.1") { loaders.add(com.oliveryasuna.modkit.core.extension.McLoader.FABRIC) }
+            }
+            """.trimIndent()
+        )
+
+        val result = runner("help", "-Pmodkit.loader=fabric", "-Pmodkit.commonSourceSet=shared").buildAndFail()
+
+        assertTrue(
+            result.output.contains("modkit.commonSourceSet = 'shared' but no such source set exists"),
+            result.output
+        )
+    }
+
     // --- Real fixture builds (download Minecraft; slow on first run) ---
 
     private fun fabricFixtureSettings() {

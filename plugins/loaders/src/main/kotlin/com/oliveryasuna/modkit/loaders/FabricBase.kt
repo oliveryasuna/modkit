@@ -4,9 +4,11 @@ import com.oliveryasuna.modkit.core.extension.McLoader
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.loaders.extension.LoadersSpec
 import com.oliveryasuna.modkit.loaders.extension.MappingsScheme
+import com.oliveryasuna.modkit.plugin.DEFAULT_COMMON_SOURCE_SET
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import org.gradle.api.GradleException
 import org.gradle.api.Project
+import org.gradle.api.tasks.SourceSetContainer
 
 /**
  * Applies and configures Fabric Loom for a FABRIC target, mapping the Modkit
@@ -17,7 +19,8 @@ internal fun configureFabric(
     project: Project,
     modkit: ModkitExtension,
     loaders: LoadersSpec,
-    splitClient: Boolean
+    splitClient: Boolean,
+    commonSourceSet: String
 ) {
     project.pluginManager.apply("fabric-loom")
     project.addParchmentRepository()
@@ -27,6 +30,24 @@ internal fun configureFabric(
     // before Loom finalizes its Minecraft jar configuration.
     if(splitClient) {
         loom.splitEnvironmentSourceSets()
+    }
+
+    // Bind the mod to a non-`main` common source set. Loom treats `main` as the
+    // mod's code by default, so only a non-default name needs wiring: give the
+    // set its remap configurations (modImplementation/etc.) and declare it as
+    // the mod's source set. Done eagerly — Loom consumes `mods` while
+    // finalizing its config, so a later (afterEvaluate) registration would be
+    // too late. (splitClient + non-main is rejected upstream in the loaders
+    // plugin.)
+    if(commonSourceSet != DEFAULT_COMMON_SOURCE_SET) {
+        val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+        val common = sourceSets.findByName(commonSourceSet)
+                     ?: throw GradleException(
+                         "modkit.commonSourceSet = '$commonSourceSet' but no such source set exists. " +
+                         "Create it in your build script (e.g. sourceSets.create(\"$commonSourceSet\")) or unset the property."
+                     )
+        loom.createRemapConfigurations(common)
+        loom.mods.register(modkit.modId.get()) { it.sourceSet(common) }
     }
 
     // Active Minecraft version: the single enabled target declaring FABRIC.

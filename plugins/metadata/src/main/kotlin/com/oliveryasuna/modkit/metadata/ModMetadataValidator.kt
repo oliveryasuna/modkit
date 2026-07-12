@@ -34,10 +34,10 @@ internal object ModMetadataValidator {
         }
 
         // "Missing icon" means declared-but-absent: only fail when an icon is
-        // declared and the referenced file cannot be found under main
-        // resources.
+        // declared and the referenced file cannot be found under the common
+        // source set's resources.
         if(failOnMissingIcon && icon != null && !iconExists) {
-            errors.add("Declared icon '$icon' was not found under main resources (src/main/resources/$icon).")
+            errors.add("Declared icon '$icon' was not found in the common source set's resources.")
         }
 
         // No mixin-config source is wired yet, so there are no referenced

@@ -1,10 +1,7 @@
 package com.oliveryasuna.modkit.mixins
 
 import com.oliveryasuna.modkit.mixins.extension.MixinsSpec
-import com.oliveryasuna.modkit.plugin.applyModkitCore
-import com.oliveryasuna.modkit.plugin.modkitManifestContributions
-import com.oliveryasuna.modkit.plugin.registerBlock
-import com.oliveryasuna.modkit.plugin.wireIntoCheck
+import com.oliveryasuna.modkit.plugin.*
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
@@ -51,12 +48,16 @@ public class ModkitMixinsPlugin : Plugin<Project> {
         }
 
         // The `@Mixin` sources and classpath only exist once a Java model does.
+        // Scan the common source set (`main` by default, or whatever
+        // `modkit.commonSourceSet` names) — that is where the mod's mixin
+        // classes live.
+        val commonSourceSet = project.commonSourceSet()
         project.pluginManager.withPlugin("java-base") {
             val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
-            val main = sourceSets.getByName("main")
+            val common = sourceSets.getByName(commonSourceSet)
             lint.configure { task ->
-                task.classesDirs.from(main.output.classesDirs)
-                task.compileClasspath.from(main.compileClasspath)
+                task.classesDirs.from(common.output.classesDirs)
+                task.compileClasspath.from(common.compileClasspath)
             }
         }
 

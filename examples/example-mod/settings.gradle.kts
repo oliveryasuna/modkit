@@ -16,7 +16,7 @@ pluginManagement {
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-    id("com.oliveryasuna.modkit.multiversion.settings") version "0.2.0"
+    id("com.oliveryasuna.modkit.multiversion.settings") version "0.3.0"
 }
 
 dependencyResolutionManagement {

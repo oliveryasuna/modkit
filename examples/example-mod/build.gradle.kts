@@ -4,13 +4,13 @@ import com.oliveryasuna.modkit.dependencies.nest
 plugins {
     // Already on the classpath via the settings plugin (same artifact) — no version.
     id("com.oliveryasuna.modkit.multiversion")
-    id("com.oliveryasuna.modkit.loaders") version "0.2.0"
-    id("com.oliveryasuna.modkit.metadata") version "0.2.0"
-    id("com.oliveryasuna.modkit.mixins") version "0.2.0"
-    id("com.oliveryasuna.modkit.dependencies") version "0.2.0"
-    id("com.oliveryasuna.modkit.datagen") version "0.2.0"
-    id("com.oliveryasuna.modkit.run") version "0.2.0"
-    id("com.oliveryasuna.modkit.testing") version "0.2.0"
+    id("com.oliveryasuna.modkit.loaders") version "0.3.0"
+    id("com.oliveryasuna.modkit.metadata") version "0.3.0"
+    id("com.oliveryasuna.modkit.mixins") version "0.3.0"
+    id("com.oliveryasuna.modkit.dependencies") version "0.3.0"
+    id("com.oliveryasuna.modkit.datagen") version "0.3.0"
+    id("com.oliveryasuna.modkit.run") version "0.3.0"
+    id("com.oliveryasuna.modkit.testing") version "0.3.0"
 }
 
 // The node supplies the Minecraft version and loader; derive both here.
