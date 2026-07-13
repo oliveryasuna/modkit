@@ -155,4 +155,65 @@ class ModkitRunFunctionalTest {
         assertTrue(result.output.contains("Configuration cache entry stored."), result.output)
     }
 
+    // --- Compat-test variants on a real Loom base ---
+
+    private fun fabricVariantBuild() {
+        projectDir.resolve("build.gradle.kts").writeText(
+            """
+            import net.fabricmc.loom.api.LoomGradleExtensionAPI
+
+            plugins {
+                id("fabric-loom")
+                id("com.oliveryasuna.modkit.run")
+            }
+
+            // The staged mod is resolved from a PROJECT repository: Loom adds
+            // project repositories, which makes Gradle ignore settings-level
+            // repositories, so a variant mod declared only in settings would not
+            // resolve. (A plain artifact stands in for a mod jar — the staging
+            // mechanism is loader-agnostic.)
+            repositories { mavenCentral() }
+
+            val loom = extensions.getByType(LoomGradleExtensionAPI::class.java)
+
+            dependencies {
+                "minecraft"("com.mojang:minecraft:1.21.1")
+                "mappings"(loom.officialMojangMappings())
+                "modImplementation"("net.fabricmc:fabric-loader:0.19.3")
+            }
+
+            modkit {
+                modId.set("mymod")
+                minecraft("1.21.1") { loaders.add(com.oliveryasuna.modkit.core.extension.McLoader.FABRIC) }
+                run {
+                    variants {
+                        register("compat") {
+                            mods("com.google.code.gson:gson:2.11.0")
+                            appliesTo("client")
+                        }
+                    }
+                }
+            }
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `a variant stages its mods and registers a cloned run on Loom`() {
+        fabricSettings()
+        fabricVariantBuild()
+
+        // The staging task resolves + copies the mod into the variant game dir.
+        val sync = runner("syncCompatToRun", "--configuration-cache", "--stacktrace").build()
+        assertEquals(TaskOutcome.SUCCESS, sync.task(":syncCompatToRun")?.outcome, sync.output)
+        assertTrue(sync.output.contains("Configuration cache entry stored."), sync.output)
+
+        val staged = projectDir.resolve("run/compat/mods/gson-2.11.0.jar")
+        assertTrue(staged.exists(), "expected staged mod at ${staged.path}")
+
+        // The cloned run task exists (Loom derives runClientCompat from the run).
+        val help = runner("help", "--task", "runClientCompat", "--stacktrace").build()
+        assertTrue(help.output.contains("runClientCompat"), help.output)
+    }
+
 }

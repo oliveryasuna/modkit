@@ -1,13 +1,16 @@
 package com.oliveryasuna.modkit.run.extension
 
 import org.gradle.api.Action
+import org.gradle.api.NamedDomainObjectContainer
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.tasks.Nested
+import javax.inject.Inject
 
 /**
  * The `modkit.run { }` block. Declares a unified, cross-loader set of run
  * configurations that map onto Fabric Loom run configs and ModDevGradle runs.
  */
-public abstract class RunSpec {
+public abstract class RunSpec @Inject constructor(objects: ObjectFactory) {
 
     @get:Nested
     public abstract val client: RunConfig
@@ -23,6 +26,25 @@ public abstract class RunSpec {
 
     @get:Nested
     public abstract val hotswap: HotswapSpec
+
+    /**
+     * Compatibility-test variants — parallel runs that stage extra mods into an
+     * isolated game directory. The factory threads the container back to each
+     * element so `extends("...")` can look up its siblings; the `lateinit`
+     * closes the cycle (the factory only fires on `register(...)`, after the
+     * container is assigned).
+     */
+    public val variants: NamedDomainObjectContainer<RunVariant> = run {
+        lateinit var container: NamedDomainObjectContainer<RunVariant>
+        container = objects.domainObjectContainer(RunVariant::class.java) { name ->
+            objects.newInstance(RunVariant::class.java, name, container)
+        }
+        container
+    }
+
+    public fun variants(action: Action<in NamedDomainObjectContainer<RunVariant>>) {
+        action.execute(variants)
+    }
 
     public fun client(action: Action<in RunConfig>) {
         action.execute(client)

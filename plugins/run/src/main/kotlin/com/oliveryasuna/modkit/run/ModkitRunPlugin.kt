@@ -41,6 +41,12 @@ public class ModkitRunPlugin : Plugin<Project> {
         conventionRun(run.gametest, "run/gametest", enabled = false)
 
         run.hotswap.preferJetBrainsRuntime.convention(true)
+
+        // Variant conventions applied as elements are registered.
+        run.variants.all { variant ->
+            variant.gameDir.convention("run/${variant.name}")
+            variant.enabled.convention(true)
+        }
     }
 
     private fun conventionRun(config: RunConfig, gameDir: String, enabled: Boolean) {

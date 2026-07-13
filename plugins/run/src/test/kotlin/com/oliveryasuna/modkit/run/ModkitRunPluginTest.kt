@@ -71,4 +71,40 @@ class ModkitRunPluginTest {
         assertTrue(project().run.hotswap.preferJetBrainsRuntime.get())
     }
 
+    // --- Compat-test variants ---
+
+    @Test
+    fun `variant game directory and enabled default per name`() {
+        val run = project().run
+        val variant = run.variants.create("modMenu")
+
+        assertEquals("run/modMenu", variant.gameDir.get())
+        assertTrue(variant.enabled.get())
+    }
+
+    @Test
+    fun `extends composes another variant's mods lazily regardless of registration order`() {
+        val run = project().run
+
+        // `full` extends `base` before `base` is configured — resolution is lazy.
+        val full = run.variants.create("full") { it.extends("base"); it.mods("group:full:1.0") }
+        run.variants.create("base") { it.mods("group:base:1.0") }
+
+        val coords = full.modCoordinates.get()
+        assertTrue(coords.contains("group:full:1.0"), coords.toString())
+        assertTrue(coords.contains("group:base:1.0"), coords.toString())
+    }
+
+    @Test
+    fun `run kind derives the variant run name and base config`() {
+        assertEquals("clientModMenu", RunKind.CLIENT.runName("modMenu"))
+        assertEquals("serverFull", RunKind.SERVER.runName("full"))
+        assertEquals(RunKind.CLIENT, RunKind.fromName("client"))
+        assertNull(RunKind.fromName("bogus"))
+
+        val run = project().run
+        assertSame(run.client, run.runByKind(RunKind.CLIENT))
+        assertSame(run.gametest, run.runByKind(RunKind.GAMETEST))
+    }
+
 }

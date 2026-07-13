@@ -1,8 +1,8 @@
 package com.oliveryasuna.modkit.run
 
-import com.oliveryasuna.modkit.run.extension.RunConfig
 import com.oliveryasuna.modkit.run.extension.RunSpec
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
+import net.fabricmc.loom.configuration.ide.RunConfigSettings
 import org.gradle.api.Project
 
 /**
@@ -19,35 +19,64 @@ internal fun configureFabricRuns(project: Project, run: RunSpec) {
     val loom = project.extensions.getByType(LoomGradleExtensionAPI::class.java)
 
     project.afterEvaluate {
-        configureLoomRun(project, loom, "client", run.client) { it.client() }
-        configureLoomRun(project, loom, "server", run.server) { it.server() }
+        // Fixed runs.
+        createLoomRun(project, loom, "client", RunKind.CLIENT, run.client.snapshot())
+        createLoomRun(project, loom, "server", RunKind.SERVER, run.server.snapshot())
+        if(run.data.enabled.getOrElse(false)) warnUnsupported(project, "data")
+        if(run.gametest.enabled.getOrElse(false)) warnUnsupported(project, "gametest")
 
-        // Loom has no data-generation or gametest run helper — warn and skip
-        // when either is explicitly enabled.
-        if(run.data.enabled.getOrElse(false)) {
-            project.logger.warn(
-                "modkit.run: 'data' runs are not supported on Fabric " +
-                "(Loom has no data-generation run helper); skipping."
-            )
-        }
-        if(run.gametest.enabled.getOrElse(false)) {
-            project.logger.warn(
-                "modkit.run: 'gametest' runs are not supported on Fabric " +
-                "(Loom has no gametest run helper); skipping."
-            )
+        // Compat-test variants.
+        configureFabricVariants(project, loom, run)
+    }
+}
+
+private fun configureFabricVariants(project: Project, loom: LoomGradleExtensionAPI, run: RunSpec) {
+    run.variants.forEach { variant ->
+        if(!variant.enabled.getOrElse(true)) return@forEach
+
+        val syncTask = stageVariantMods(project, variant)
+
+        variant.appliesToRuns.getOrElse(emptySet()).forEach { kindName ->
+            val kind = RunKind.fromName(kindName)
+            if(kind == null) {
+                project.logger.warn("modkit.run: variant '${variant.name}' applies to unknown run kind '$kindName'; skipping.")
+                return@forEach
+            }
+
+            // Clone the base run's values into the variant's own game
+            // directory, forcing it enabled (the variant, not the base,
+            // decides).
+            val values = run.runByKind(kind).snapshot().copy(gameDir = variant.gameDir.get(), enabled = true)
+            val runName = kind.runName(variant.name)
+
+            createLoomRun(project, loom, runName, kind, values)
+            wireSyncDependency(project, runName, syncTask)
         }
     }
 }
 
-private fun configureLoomRun(
+/**
+ * Realizes one Loom run of [kind]. Only `client`/`server` exist on Loom;
+ * `data`/ `gametest` have no Loom run helper and are warned + skipped (matching
+ * the base runs).
+ */
+private fun createLoomRun(
     project: Project,
     loom: LoomGradleExtensionAPI,
     name: String,
-    config: RunConfig,
-    setSide: (net.fabricmc.loom.configuration.ide.RunConfigSettings) -> Unit
+    kind: RunKind,
+    values: RunConfigValues
 ) {
-    val values = config.snapshot()
     if(!values.enabled) return
+
+    val setSide: (RunConfigSettings) -> Unit = when(kind) {
+        RunKind.CLIENT -> RunConfigSettings::client
+        RunKind.SERVER -> RunConfigSettings::server
+        RunKind.DATA, RunKind.GAMETEST -> {
+            warnUnsupported(project, name)
+            return
+        }
+    }
 
     val mapping = mapRunConfigToLoom(name, values)
     mapping.warnings.forEach { project.logger.warn(it) }
@@ -61,4 +90,10 @@ private fun configureLoomRun(
     if(mapping.programArgs.isNotEmpty()) {
         settings.programArgs(mapping.programArgs)
     }
+}
+
+private fun warnUnsupported(project: Project, name: String) {
+    project.logger.warn(
+        "modkit.run: '$name' runs are not supported on Fabric (Loom has no run helper for that kind); skipping."
+    )
 }
