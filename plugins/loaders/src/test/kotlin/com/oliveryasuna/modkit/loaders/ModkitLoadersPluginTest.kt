@@ -1,13 +1,13 @@
 package com.oliveryasuna.modkit.loaders
 
+import com.oliveryasuna.modkit.core.diagnostics.ModkitDiagnostics
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.loaders.extension.LoadersSpec
 import com.oliveryasuna.modkit.loaders.extension.MappingsScheme
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.testfixtures.ProjectBuilder
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertNotNull
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class ModkitLoadersPluginTest {
@@ -50,6 +50,19 @@ class ModkitLoadersPluginTest {
     @Test
     fun `registers the modkitLoaderInfo task`() {
         assertNotNull(project().tasks.findByName("modkitLoaderInfo"))
+    }
+
+    @Test
+    fun `publishes a Loader diagnostics section and a no-active-loader problem`() {
+        val project = project()
+        val diagnostics = project.extensions.getByType(ModkitDiagnostics::class.java)
+
+        assertTrue(diagnostics.sections.get().containsKey("Loader"), diagnostics.sections.get().keys.toString())
+        // No `modkit.loader` property is set in a ProjectBuilder unit test.
+        assertTrue(
+            diagnostics.problems.get().any { it.contains("No active loader") },
+            diagnostics.problems.get().toString()
+        )
     }
 
 }

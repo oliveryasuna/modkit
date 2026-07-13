@@ -24,6 +24,7 @@ public class ModkitLoadersPlugin : Plugin<Project> {
         val activeLoader = project.activeLoader()
 
         registerDiagnostics(project, modkit, loaders, activeLoader)
+        publishDiagnostics(project, loaders, activeLoader)
 
         // Split-client is also read eagerly: creating the client source set is
         // a structural change the base must make before Loom finalizes its
@@ -90,6 +91,42 @@ public class ModkitLoadersPlugin : Plugin<Project> {
                 println("targets:")
                 targets.forEach { println("  $it") }
             }
+        }
+    }
+
+    /**
+     * Publishes the loader's `modkitDoctor` section + problems (no cross-plugin
+     * dep).
+     */
+    private fun publishDiagnostics(
+        project: Project,
+        loaders: LoadersSpec,
+        activeLoader: McLoader?
+    ) {
+        val diagnostics = project.modkitDiagnostics()
+
+        val scheme = loaders.mappings.scheme
+        val parchment = loaders.mappings.parchment
+        val fabricLoader = loaders.fabric.loaderVersion
+        val fabricApi = loaders.fabric.apiVersion
+        val neoforge = loaders.neoforge.version
+
+        diagnostics.sections.put(
+            "Loader",
+            project.provider {
+                listOf(
+                    "active:    ${activeLoader?.name ?: "<not set>"}",
+                    "mappings:  ${scheme.orNull}${parchment.orNull?.let { " + parchment $it" } ?: ""}",
+                    "fabric:    loader=${fabricLoader.orNull ?: "-"} api=${fabricApi.orNull ?: "-"}",
+                    "neoforge:  ${neoforge.orNull ?: "-"}"
+                )
+            }
+        )
+
+        if(activeLoader == null) {
+            diagnostics.problems.add(
+                "No active loader — set -P${McLoader.PROPERTY}=fabric|neoforge; no mod will build."
+            )
         }
     }
 

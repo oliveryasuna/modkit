@@ -100,4 +100,29 @@ class ModkitCoreFunctionalTest {
         assertTrue(second.output.contains("Reusing configuration cache."), second.output)
     }
 
+    @Test
+    fun `modkitDoctor reports the model section and flags missing targets`() {
+        settings()
+        buildFile(
+            """
+            plugins {
+                id("com.oliveryasuna.modkit.core")
+            }
+
+            modkit {
+                modId.set("mymod")
+                version.set("1.2.3")
+                // No targets declared → a problem is surfaced.
+            }
+            """.trimIndent()
+        )
+
+        val result = runner("modkitDoctor", "-q", "--configuration-cache").build()
+
+        assertTrue(result.output.contains("[Model]"), result.output)
+        assertTrue(result.output.contains("modId:     mymod"), result.output)
+        assertTrue(result.output.contains("[Problems]"), result.output)
+        assertTrue(result.output.contains("No Minecraft targets declared"), result.output)
+    }
+
 }

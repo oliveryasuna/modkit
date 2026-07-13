@@ -1,5 +1,6 @@
 package com.oliveryasuna.modkit.plugin
 
+import com.oliveryasuna.modkit.core.diagnostics.ModkitDiagnostics
 import com.oliveryasuna.modkit.core.extension.McLoader
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.core.manifest.ModkitManifestContributions
@@ -76,3 +77,13 @@ public fun Project.wireIntoCheck(task: TaskProvider<out Task>) {
 public fun Project.modkitManifestContributions(): ModkitManifestContributions =
     extensions.findByType(ModkitManifestContributions::class.java)
     ?: extensions.create("modkitManifestContributions", ModkitManifestContributions::class.java)
+
+/**
+ * The shared per-project [ModkitDiagnostics] registry, where sibling plugins
+ * publish report sections and problem warnings that the `modkitDoctor` task
+ * folds into one health summary. Created lazily on first access; safe to call
+ * from any modkit plugin.
+ */
+public fun Project.modkitDiagnostics(): ModkitDiagnostics =
+    extensions.findByType(ModkitDiagnostics::class.java)
+    ?: extensions.create("modkitDiagnostics", ModkitDiagnostics::class.java)

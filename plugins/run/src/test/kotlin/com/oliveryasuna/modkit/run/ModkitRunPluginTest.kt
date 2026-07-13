@@ -96,6 +96,16 @@ class ModkitRunPluginTest {
     }
 
     @Test
+    fun `publishes a Runs diagnostics section`() {
+        val project = ProjectBuilder.builder().build().also { it.pluginManager.apply(ModkitRunPlugin::class.java) }
+        val diagnostics = project.extensions.getByType(com.oliveryasuna.modkit.core.diagnostics.ModkitDiagnostics::class.java)
+
+        val runs = diagnostics.sections.get()["Runs"]
+        assertNotNull(runs)
+        assertTrue(runs!!.any { it.startsWith("client:") }, runs.toString())
+    }
+
+    @Test
     fun `run kind derives the variant run name and base config`() {
         assertEquals("clientModMenu", RunKind.CLIENT.runName("modMenu"))
         assertEquals("serverFull", RunKind.SERVER.runName("full"))

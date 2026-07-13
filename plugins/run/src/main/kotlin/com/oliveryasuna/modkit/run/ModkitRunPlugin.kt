@@ -1,6 +1,7 @@
 package com.oliveryasuna.modkit.run
 
 import com.oliveryasuna.modkit.plugin.applyModkitCore
+import com.oliveryasuna.modkit.plugin.modkitDiagnostics
 import com.oliveryasuna.modkit.plugin.registerBlock
 import com.oliveryasuna.modkit.run.extension.RunConfig
 import com.oliveryasuna.modkit.run.extension.RunSpec
@@ -23,6 +24,7 @@ public class ModkitRunPlugin : Plugin<Project> {
 
         applyConventions(run)
         registerRunInfo(project, run)
+        publishDiagnostics(project, run)
 
         // Scope by whichever base is applied — only one ever is. run configures
         // the base's run container but never applies the base.
@@ -32,6 +34,36 @@ public class ModkitRunPlugin : Plugin<Project> {
         project.pluginManager.withPlugin("net.neoforged.moddev") {
             configureNeoForgeRuns(project, run)
         }
+    }
+
+    /**
+     * Publishes the run configuration + variants as a `modkitDoctor` section.
+     */
+    private fun publishDiagnostics(project: Project, run: RunSpec) {
+        project.modkitDiagnostics().sections.put(
+            "Runs",
+            project.provider {
+                buildList<String> {
+                    listOf(
+                        "client" to run.client,
+                        "server" to run.server,
+                        "data" to run.data,
+                        "gametest" to run.gametest
+                    ).forEach { (name, config) ->
+                        if(config.enabled.getOrElse(false)) add("$name: gameDir=${config.gameDir.orNull}")
+                    }
+
+                    if(run.variants.isNotEmpty()) {
+                        add("variants:")
+                        run.variants.forEach { variant ->
+                            val kinds = variant.appliesToRuns.getOrElse(emptySet())
+                            val mods = variant.modCoordinates.getOrElse(emptyList()).size
+                            add("  - ${variant.name} -> $kinds ($mods mods)")
+                        }
+                    }
+                }
+            }
+        )
     }
 
     private fun applyConventions(run: RunSpec) {

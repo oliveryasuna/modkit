@@ -1,5 +1,6 @@
 package com.oliveryasuna.modkit.core
 
+import com.oliveryasuna.modkit.core.diagnostics.ModkitDiagnostics
 import com.oliveryasuna.modkit.core.extension.McLoader
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import org.gradle.api.Project
@@ -17,6 +18,9 @@ class ModkitCorePluginTest {
 
     private val Project.modkit: ModkitExtension
         get() = extensions.getByType(ModkitExtension::class.java)
+
+    private val Project.diagnostics: ModkitDiagnostics
+        get() = extensions.getByType(ModkitDiagnostics::class.java)
 
     @Test
     fun `registers the modkit extension`() {
@@ -84,6 +88,38 @@ class ModkitCorePluginTest {
             .getDependencies(project.tasks.getByName("check"))
             .map { it.name }
         assertTrue(checkDeps.contains("validateModkitModel"))
+    }
+
+    // --- modkitDoctor / diagnostics registry ---
+
+    @Test
+    fun `registers the modkitDoctor task in the modkit group`() {
+        val task = project().tasks.findByName("modkitDoctor")
+        assertNotNull(task)
+        assertEquals("modkit", task!!.group)
+    }
+
+    @Test
+    fun `core publishes a Model diagnostics section`() {
+        val project = project { group = "com.example"; version = "1.0.0" }
+        project.modkit.modId.set("mymod")
+        project.modkit.minecraft("1.21.1") { it.loaders.add(McLoader.FABRIC) }
+
+        val sections = project.diagnostics.sections.get()
+        assertTrue(sections.containsKey("Model"), sections.keys.toString())
+        val model = sections.getValue("Model")
+        assertTrue(model.any { it.contains("modId") && it.contains("mymod") }, model.toString())
+        assertTrue(model.any { it.contains("1.21.1 -> [FABRIC]") }, model.toString())
+    }
+
+    @Test
+    fun `an empty target list surfaces a problem`() {
+        val withoutTargets = project().diagnostics.problems.get()
+        assertTrue(withoutTargets.any { it.contains("No Minecraft targets") }, withoutTargets.toString())
+
+        val project = project()
+        project.modkit.minecraft("1.21.1") { it.loaders.add(McLoader.FABRIC) }
+        assertTrue(project.diagnostics.problems.get().none { it.contains("No Minecraft targets") })
     }
 
 }
