@@ -37,6 +37,4 @@ Documentation: https://mc.oliveryasuna.com/modkit/
 
 ## License
 
-Modkit is currently unlicensed but will be released under an open-source license once the core API is stable.
-
 Copyright © 2026 Oliver Yasuna. All rights reserved.
