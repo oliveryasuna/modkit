@@ -67,3 +67,22 @@ internal fun wireSyncDependency(project: Project, runName: String, syncTask: Tas
     val taskName = "run" + runName.replaceFirstChar { it.uppercaseChar() }
     project.tasks.matching { it.name == taskName }.configureEach { it.dependsOn(syncTask) }
 }
+
+/**
+ * Adds the variant run [runName] to the aggregate `runAllVariants` task,
+ * registering that task on first use. Running it launches every compat
+ * variant's run in sequence. `matching` keeps the dependency robust to run-task
+ * registration order.
+ */
+internal fun aggregateVariantRun(project: Project, runName: String) {
+    if(project.tasks.findByName(RUN_ALL_VARIANTS) == null) {
+        project.tasks.register(RUN_ALL_VARIANTS) { task ->
+            task.group = "modkit"
+            task.description = "Runs every compatibility-test variant's run, in sequence."
+        }
+    }
+    val runTaskName = "run" + runName.replaceFirstChar { it.uppercaseChar() }
+    project.tasks.named(RUN_ALL_VARIANTS) { it.dependsOn(project.tasks.matching { m -> m.name == runTaskName }) }
+}
+
+private const val RUN_ALL_VARIANTS: String = "runAllVariants"

@@ -214,6 +214,12 @@ class ModkitRunFunctionalTest {
         // The cloned run task exists (Loom derives runClientCompat from the run).
         val help = runner("help", "--task", "runClientCompat", "--stacktrace").build()
         assertTrue(help.output.contains("runClientCompat"), help.output)
+
+        // runAllVariants aggregates the variant runs — a dry run shows the graph
+        // without launching the game.
+        val dryRun = runner("runAllVariants", "--dry-run").build()
+        assertTrue(dryRun.output.contains(":runClientCompat "), dryRun.output)
+        assertTrue(dryRun.output.contains(":runAllVariants "), dryRun.output)
     }
 
 }

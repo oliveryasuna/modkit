@@ -91,6 +91,7 @@ private fun configureNeoForgeVariants(project: Project, neoForge: NeoForgeExtens
                 ideName = "${kind.ideName} (${variant.name})"
             )
             wireSyncDependency(project, runName, syncTask)
+            aggregateVariantRun(project, runName)
         }
     }
 }

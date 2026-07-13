@@ -51,6 +51,7 @@ private fun configureFabricVariants(project: Project, loom: LoomGradleExtensionA
 
             createLoomRun(project, loom, runName, kind, values)
             wireSyncDependency(project, runName, syncTask)
+            aggregateVariantRun(project, runName)
         }
     }
 }
