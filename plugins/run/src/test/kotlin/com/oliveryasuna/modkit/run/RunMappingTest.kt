@@ -82,4 +82,31 @@ class RunMappingTest {
         assertTrue(report.contains("disabled"), report)
     }
 
+    @Test
+    fun `mergeVariant appends list args, merges map args with the variant winning, and forces its own dir and enabled`() {
+        val base = values(
+            gameDir = "run/client",
+            jvmArgs = listOf("-Xmx2G"),
+            programArgs = listOf("--base"),
+            systemProperties = mapOf("shared" to "base", "onlyBase" to "b"),
+            environment = mapOf("E" to "base"),
+            enabled = false
+        )
+
+        val merged = base.mergeVariant(
+            gameDir = "run/debug",
+            jvmArgs = listOf("-Xdebug"),
+            programArgs = listOf("--variant"),
+            systemProperties = mapOf("shared" to "variant", "onlyVariant" to "v"),
+            environment = mapOf("E" to "variant")
+        )
+
+        assertEquals("run/debug", merged.gameDir)
+        assertTrue(merged.enabled)
+        assertEquals(listOf("-Xmx2G", "-Xdebug"), merged.jvmArgs)
+        assertEquals(listOf("--base", "--variant"), merged.programArgs)
+        assertEquals(mapOf("shared" to "variant", "onlyBase" to "b", "onlyVariant" to "v"), merged.systemProperties)
+        assertEquals(mapOf("E" to "variant"), merged.environment)
+    }
+
 }

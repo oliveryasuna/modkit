@@ -82,7 +82,7 @@ private fun configureNeoForgeVariants(project: Project, neoForge: NeoForgeExtens
             }
 
             val runName = kind.runName(variant.name)
-            writeNeoForgeRun(
+            val model = writeNeoForgeRun(
                 neoForge = neoForge,
                 runName = runName,
                 kind = kind,
@@ -90,6 +90,14 @@ private fun configureNeoForgeVariants(project: Project, neoForge: NeoForgeExtens
                 gameDir = variant.gameDir.map { project.layout.projectDirectory.dir(it) },
                 ideName = "${kind.ideName} (${variant.name})"
             )
+            // Layer the variant's extra args over the base's: lists append,
+            // maps merge with the variant winning on a key collision (the later
+            // putAll takes precedence).
+            model.jvmArguments.addAll(variant.jvmArgs)
+            model.programArguments.addAll(variant.programArgs)
+            model.systemProperties.putAll(variant.systemProperties)
+            model.environment.putAll(variant.environment)
+
             wireSyncDependency(project, runName, syncTask)
             aggregateVariantRun(project, runName)
         }
@@ -98,7 +106,8 @@ private fun configureNeoForgeVariants(project: Project, neoForge: NeoForgeExtens
 
 /**
  * Writes a run of [kind] named [runName], taking its args from [base] but its
- * game dir from [gameDir].
+ * game dir from [gameDir]. Returns the model so callers (variants) can layer
+ * extra args on top.
  */
 private fun writeNeoForgeRun(
     neoForge: NeoForgeExtension,
@@ -107,7 +116,7 @@ private fun writeNeoForgeRun(
     base: RunConfig,
     gameDir: Provider<Directory>,
     ideName: String
-) {
+): RunModel {
     val model = neoForge.runs.maybeCreate(runName)
     kind.applyToNeoForge(model)
 
@@ -118,4 +127,6 @@ private fun writeNeoForgeRun(
     model.environment.putAll(base.environment)
     model.devLogin.set(base.auth)
     model.ideName.set(ideName)
+
+    return model
 }

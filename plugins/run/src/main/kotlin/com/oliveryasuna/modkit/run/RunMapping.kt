@@ -17,6 +17,27 @@ internal data class RunConfigValues(
     val enabled: Boolean
 )
 
+/**
+ * Derives a variant's run values from this base run's: the variant gets its own
+ * game directory, is forced enabled, appends its extra list args, and merges
+ * its map args over the base's (the variant wins on a key collision).
+ */
+internal fun RunConfigValues.mergeVariant(
+    gameDir: String,
+    jvmArgs: List<String>,
+    programArgs: List<String>,
+    systemProperties: Map<String, String>,
+    environment: Map<String, String>
+): RunConfigValues =
+    copy(
+        gameDir = gameDir,
+        enabled = true,
+        jvmArgs = this.jvmArgs + jvmArgs,
+        programArgs = this.programArgs + programArgs,
+        systemProperties = this.systemProperties + systemProperties,
+        environment = this.environment + environment
+    )
+
 /** Resolves a [RunConfig]'s providers into a [RunConfigValues] snapshot. */
 internal fun RunConfig.snapshot(): RunConfigValues =
     RunConfigValues(

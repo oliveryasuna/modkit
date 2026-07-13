@@ -43,10 +43,15 @@ private fun configureFabricVariants(project: Project, loom: LoomGradleExtensionA
                 return@forEach
             }
 
-            // Clone the base run's values into the variant's own game
-            // directory, forcing it enabled (the variant, not the base,
-            // decides).
-            val values = run.runByKind(kind).snapshot().copy(gameDir = variant.gameDir.get(), enabled = true)
+            // Clone the base run's values into the variant's own game directory
+            // (forced enabled), plus the variant's extra args merged in.
+            val values = run.runByKind(kind).snapshot().mergeVariant(
+                gameDir = variant.gameDir.get(),
+                jvmArgs = variant.jvmArgs.getOrElse(emptyList()),
+                programArgs = variant.programArgs.getOrElse(emptyList()),
+                systemProperties = variant.systemProperties.getOrElse(emptyMap()),
+                environment = variant.environment.getOrElse(emptyMap())
+            )
             val runName = kind.runName(variant.name)
 
             createLoomRun(project, loom, runName, kind, values)

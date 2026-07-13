@@ -33,6 +33,26 @@ public abstract class RunVariant @Inject constructor(
     /** Names of run kinds (`client`/`server`/`data`/`gametest`) to clone. */
     public abstract val appliesToRuns: SetProperty<String>
 
+    /** Extra JVM arguments, **appended** to the cloned base run's. */
+    public abstract val jvmArgs: ListProperty<String>
+
+    /**
+     * Extra program (game) arguments, **appended** to the cloned base run's.
+     */
+    public abstract val programArgs: ListProperty<String>
+
+    /**
+     * Extra system properties, **merged over** the base run's (the variant wins
+     * on a key collision).
+     */
+    public abstract val systemProperties: MapProperty<String, String>
+
+    /**
+     * Extra environment variables, **merged over** the base run's (the variant
+     * wins).
+     */
+    public abstract val environment: MapProperty<String, String>
+
     /**
      * Adds extra mod-jar coordinate strings to stage (e.g.
      * `maven.modrinth:modmenu:...`).
