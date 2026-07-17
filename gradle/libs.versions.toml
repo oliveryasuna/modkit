@@ -11,6 +11,7 @@ kotlin = "2.3.21"
 
 # Build / publishing plugins
 plugin-publish = "2.1.1"
+vanniktech-maven-publish = "0.37.0"
 
 # Loader tooling — wrapped by :plugins:loaders and applied to consumer mod
 # builds. Parchment is intentionally absent: it is per-MC-version mappings data
@@ -49,6 +50,7 @@ junit = "6.1.1"
 # Plugins
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-publish-plugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "plugin-publish" }
+vanniktech-maven-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "vanniktech-maven-publish" }
 
 # Loader tooling (real plugin artifacts; each carries its plugin descriptor so
 # it can be applied by id)

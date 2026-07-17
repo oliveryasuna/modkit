@@ -27,4 +27,5 @@ dependencies {
     // Make these plugins available to apply from the convention plugin.
     implementation(libs.kotlin.gradle.plugin)
     implementation(libs.plugin.publish.plugin)
+    implementation(libs.vanniktech.maven.publish.plugin)
 }
