@@ -93,6 +93,8 @@ internal object MultiversionRenderer {
         appendLine()
         appendLine("    multiversion {")
         appendLine("    }")
+        appendLine()
+        ModuleBlocks.loadersBlock(plan).forEach { appendLine(it) }
         val blocks = ModuleBlocks.render(plan)
         if(blocks.isNotEmpty()) {
             appendLine()

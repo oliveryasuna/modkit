@@ -73,6 +73,8 @@ internal object SimpleRenderer {
             appendLine("    minecraft(\"${node.minecraft}\") {")
             appendLine("        loaders.add(com.oliveryasuna.modkit.core.extension.McLoader.${node.loader.name})")
             appendLine("    }")
+            appendLine()
+            ModuleBlocks.loadersBlock(plan).forEach { appendLine(it) }
             val blocks = ModuleBlocks.render(plan)
             if(blocks.isNotEmpty()) {
                 appendLine()
