@@ -26,10 +26,15 @@ internal object ModuleBlocks {
     fun render(plan: ScaffoldPlan): List<String> {
         val lines = mutableListOf<String>()
 
+        // The `entrypoints.main` is Fabric-only (NeoForge uses `@Mod`, no
+        // manifest entry), so emit the metadata block only when Fabric is in
+        // the matrix — pointing at the Fabric bootstrap.
         if(plan.modules.contains(ScaffoldModule.METADATA)) {
-            lines += "    metadata {"
-            lines += "        entrypoints { main(\"${Naming.modClassFqcn(plan)}\") }"
-            lines += "    }"
+            Naming.fabricEntryFqcn(plan)?.let { fabricEntry ->
+                lines += "    metadata {"
+                lines += "        entrypoints { main(\"$fabricEntry\") }"
+                lines += "    }"
+            }
         }
 
         if(plan.modules.contains(ScaffoldModule.MIXINS)) {
