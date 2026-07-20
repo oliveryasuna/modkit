@@ -17,7 +17,7 @@ vanniktech-maven-publish = "0.37.0"
 # builds. Parchment is intentionally absent: it is per-MC-version mappings data
 # (org.parchmentmc.data:parchment-<mc>:<date>), resolved during mappings wiring,
 # not a single pinnable plugin version.
-loom = "1.17.13"
+loom = "1.17.16"
 moddevgradle = "2.0.141"
 
 # AW->AT transpiler: parse Fabric access wideners, emit NeoForge access transformers.
