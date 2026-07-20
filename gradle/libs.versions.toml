@@ -18,7 +18,7 @@ vanniktech-maven-publish = "0.37.0"
 # (org.parchmentmc.data:parchment-<mc>:<date>), resolved during mappings wiring,
 # not a single pinnable plugin version.
 loom = "1.17.13"
-moddevgradle = "2.0.141"
+moddevgradle = "2.0.142"
 
 # AW->AT transpiler: parse Fabric access wideners, emit NeoForge access transformers.
 access-widener = "2.1.0"
