@@ -26,7 +26,7 @@ accesstransformers = "13.0.3"
 
 # Manifest serialization — wrapped by :plugins:metadata to emit fabric.mod.json
 # and neoforge.mods.toml from the shared model.
-night-config = "3.8.3"
+night-config = "3.9.0"
 
 # Bytecode scanning — used by :plugins:mixins to read `@Mixin` annotations off
 # compiled classes when linting mixin target references.
