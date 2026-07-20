@@ -2,12 +2,9 @@ package com.oliveryasuna.modkit.metadata
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.ConfigurableFileCollection
 import org.gradle.api.provider.Property
-import org.gradle.api.tasks.Input
-import org.gradle.api.tasks.Internal
-import org.gradle.api.tasks.Optional
-import org.gradle.api.tasks.TaskAction
+import org.gradle.api.tasks.*
 import org.gradle.work.DisableCachingByDefault
 
 /**
@@ -25,8 +22,14 @@ internal abstract class ValidateModMetadataTask : DefaultTask() {
     @get:[Input Optional]
     abstract val license: Property<String>
 
-    @get:Internal
-    abstract val resourcesDir: DirectoryProperty
+    /**
+     * The common source set's resource roots. Resolved from the source set (not
+     * from `projectDirectory`) so it holds under Stonecutter, where the built
+     * node's shared sources live outside the node's own directory, and picks up
+     * the generated-manifest dir that is added as a resource source.
+     */
+    @get:[InputFiles Optional PathSensitive(PathSensitivity.RELATIVE)]
+    abstract val resourceRoots: ConfigurableFileCollection
 
     @get:Input
     abstract val neoForgeActive: Property<Boolean>
@@ -46,7 +49,9 @@ internal abstract class ValidateModMetadataTask : DefaultTask() {
     @TaskAction
     fun validate() {
         val iconName = icon.orNull
-        val iconExists = iconName != null && resourcesDir.get().file(iconName).asFile.exists()
+        val iconExists = iconName != null && resourceRoots.files.any { root ->
+            root.resolve(iconName).exists()
+        }
 
         val errors = ModMetadataValidator.validate(
             version = version.orNull,

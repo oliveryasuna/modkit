@@ -4,6 +4,7 @@ import com.electronwill.nightconfig.core.Config
 import com.electronwill.nightconfig.json.JsonFormat
 import com.electronwill.nightconfig.toml.TomlFormat
 import org.gradle.testkit.runner.GradleRunner
+import org.gradle.testkit.runner.TaskOutcome
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -149,6 +150,70 @@ class ModkitMetadataFunctionalTest {
         val result = runner("validateModMetadata").buildAndFail()
 
         assertTrue(result.output.contains("icon"), result.output)
+    }
+
+    @Test
+    fun `validateModMetadata passes when the icon is in the default resources root`() {
+        settings()
+        projectDir.resolve("src/main/resources/assets/mymod").mkdirs()
+        projectDir.resolve("src/main/resources/assets/mymod/icon.png").writeText("png")
+        projectDir.resolve("build.gradle.kts").writeText(
+            """
+            plugins {
+                id("java")
+                id("com.oliveryasuna.modkit.metadata")
+            }
+
+            modkit {
+                modId.set("mymod")
+                version.set("1.0.0")
+                metadata {
+                    icon.set("assets/mymod/icon.png")
+                }
+            }
+            """.trimIndent()
+        )
+
+        val result = runner("validateModMetadata").build()
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":validateModMetadata")?.outcome, result.output)
+    }
+
+    @Test
+    fun `validateModMetadata finds the icon in a non-default resources root`() {
+        // Reproduces the Stonecutter shape: the icon lives in a resource srcDir
+        // that is NOT `<projectDir>/src/main/resources`. The validator must resolve
+        // it through the source set's roots, not a projectDirectory-relative guess.
+        settings()
+        projectDir.resolve("shared/resources/assets/mymod").mkdirs()
+        projectDir.resolve("shared/resources/assets/mymod/icon.png").writeText("png")
+        projectDir.resolve("build.gradle.kts").writeText(
+            """
+            plugins {
+                id("java")
+                id("com.oliveryasuna.modkit.metadata")
+            }
+
+            sourceSets {
+                named("main") {
+                    resources.srcDir("shared/resources")
+                }
+            }
+
+            modkit {
+                modId.set("mymod")
+                version.set("1.0.0")
+                metadata {
+                    // No file under src/main/resources — only under the extra srcDir.
+                    icon.set("assets/mymod/icon.png")
+                }
+            }
+            """.trimIndent()
+        )
+
+        val result = runner("validateModMetadata").build()
+
+        assertEquals(TaskOutcome.SUCCESS, result.task(":validateModMetadata")?.outcome, result.output)
     }
 
     @Test

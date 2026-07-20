@@ -1,5 +1,6 @@
 package com.oliveryasuna.modkit.scaffold.render
 
+import com.oliveryasuna.modkit.core.extension.McLoader
 import com.oliveryasuna.modkit.scaffold.ScaffoldModule
 import com.oliveryasuna.modkit.scaffold.ScaffoldPlan
 
@@ -25,10 +26,15 @@ internal object ModuleBlocks {
     fun render(plan: ScaffoldPlan): List<String> {
         val lines = mutableListOf<String>()
 
+        // The `entrypoints.main` is Fabric-only (NeoForge uses `@Mod`, no
+        // manifest entry), so emit the metadata block only when Fabric is in
+        // the matrix — pointing at the Fabric bootstrap.
         if(plan.modules.contains(ScaffoldModule.METADATA)) {
-            lines += "    metadata {"
-            lines += "        entrypoints { main(\"${Naming.modClassFqcn(plan)}\") }"
-            lines += "    }"
+            Naming.fabricEntryFqcn(plan)?.let { fabricEntry ->
+                lines += "    metadata {"
+                lines += "        entrypoints { main(\"$fabricEntry\") }"
+                lines += "    }"
+            }
         }
 
         if(plan.modules.contains(ScaffoldModule.MIXINS)) {
@@ -45,4 +51,32 @@ internal object ModuleBlocks {
      */
     fun pluginIds(plan: ScaffoldPlan): List<String> =
         plan.modules.map { "    id(\"${it.pluginId}\")" }
+
+    /**
+     * The `loaders { }` block (indented four spaces to sit inside
+     * `modkit { }`), with a `fabric`/`neoforge` sub-block per selected loader.
+     * The loader/API versions have no built-in default, so they are emitted as
+     * `TODO` placeholders the user must fill — otherwise the build compiles but
+     * the run fails (no `fabric-loader` on the classpath, etc.).
+     */
+    fun loadersBlock(plan: ScaffoldPlan): List<String> {
+        val loaders = plan.nodes.map { it.loader }.distinct()
+        val lines = mutableListOf<String>()
+
+        lines += "    loaders {"
+        if(loaders.contains(McLoader.FABRIC)) {
+            lines += "        fabric {"
+            lines += "            // TODO: loaderVersion.set(\"VERSION\")"
+            lines += "            // TODO: apiVersion.set(\"VERSION\")  // optional"
+            lines += "        }"
+        }
+        if(loaders.contains(McLoader.NEOFORGE)) {
+            lines += "        neoforge {"
+            lines += "            // TODO: version.set(\"VERSION\")"
+            lines += "        }"
+        }
+        lines += "    }"
+
+        return lines
+    }
 }
