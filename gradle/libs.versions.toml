@@ -30,7 +30,7 @@ night-config = "3.8.3"
 
 # Bytecode scanning — used by :plugins:mixins to read `@Mixin` annotations off
 # compiled classes when linting mixin target references.
-asm = "9.9"
+asm = "9.10.1"
 
 # Publishing — wrapped by :plugins:publish to upload built artifacts to
 # Modrinth, CurseForge, GitHub, and Discord from the shared model.
