@@ -129,11 +129,24 @@ public class ModkitMetadataPlugin : Plugin<Project> {
             task.icon.set(metadata.icon)
             task.license.set(modkit.license)
             task.neoForgeActive.set(activeLoader == McLoader.NEOFORGE)
-            task.resourcesDir.set(project.layout.projectDirectory.dir("src/${project.commonSourceSet()}/resources"))
             task.failOnMissingIcon.set(metadata.validation.failOnMissingIcon)
             task.failOnInvalidSemver.set(metadata.validation.failOnInvalidSemver)
             task.failOnUndeclaredMixinConfig.set(metadata.validation.failOnUndeclaredMixinConfig)
             task.failOnMissingLicense.set(metadata.validation.failOnMissingLicense)
+        }
+
+        // Resolve the icon against the common source set's actual resource
+        // roots (including the generated-manifest dir), not a
+        // `projectDirectory`-relative  guess — the latter is wrong under
+        // Stonecutter, where the built node's shared sources live outside the
+        // node's own directory. `sourceDirectories` is a live FileCollection,
+        // so it reflects roots added later (Stonecutter's wiring, the generated
+        // srcDir) rather than snapshotting them here.
+        val commonSourceSet = project.commonSourceSet()
+        project.pluginManager.withPlugin("java-base") {
+            val sourceSets = project.extensions.getByType(SourceSetContainer::class.java)
+            val common = sourceSets.getByName(commonSourceSet)
+            validate.configure { it.resourceRoots.from(common.resources.sourceDirectories) }
         }
 
         // Attach to `check` only where a lifecycle exists.
