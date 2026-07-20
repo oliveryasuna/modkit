@@ -39,7 +39,7 @@ mod-publish-plugin = "2.1.1"
 # Multi-version — wrapped by :plugins:multiversion. Stonecutter expands the
 # version x loader matrix into per-node subprojects (settings-time) and provides
 # the source preprocessor. Requires Gradle 9+.
-stonecutter = "0.9.6"
+stonecutter = "0.9.7"
 
 # Test
 junit = "6.1.1"
