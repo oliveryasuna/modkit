@@ -34,7 +34,7 @@ asm = "9.9"
 
 # Publishing — wrapped by :plugins:publish to upload built artifacts to
 # Modrinth, CurseForge, GitHub, and Discord from the shared model.
-mod-publish-plugin = "2.1.1"
+mod-publish-plugin = "2.2.0"
 
 # Multi-version — wrapped by :plugins:multiversion. Stonecutter expands the
 # version x loader matrix into per-node subprojects (settings-time) and provides
