@@ -4,9 +4,6 @@ import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 
-/** The core plugin id. Everything in the suite is built on top of it. */
-private const val CORE_PLUGIN_ID: String = "com.oliveryasuna.modkit.core"
-
 /**
  * Applies `core` and hands back the `modkit { }` model.
  *

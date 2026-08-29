@@ -5,10 +5,10 @@ import com.oliveryasuna.modkit.core.manifest.ModkitManifestContributions
 import org.gradle.api.Project
 
 /** Extension name for the manifest-contributions registry. */
-private const val MANIFEST_CONTRIBUTIONS_NAME: String = "modkitManifestContributions"
+private const val MANIFEST_CONTRIBUTIONS_NAME: String = "${MODKIT_EXTENSION_PREFIX}ManifestContributions"
 
 /** Extension name for the diagnostics registry. */
-private const val DIAGNOSTICS_NAME: String = "modkitDiagnostics"
+private const val DIAGNOSTICS_NAME: String = "${MODKIT_EXTENSION_PREFIX}Diagnostics"
 
 /**
  * The shared registry sibling plugins write manifest data into.

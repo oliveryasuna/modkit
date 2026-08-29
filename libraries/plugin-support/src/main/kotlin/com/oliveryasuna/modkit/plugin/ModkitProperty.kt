@@ -20,7 +20,7 @@ public object ModkitProperties {
     public const val LOADER: String = ModLoader.PROPERTY
 
     /** Names the mod's common (shared) source set. */
-    public const val COMMON_SOURCE_SET: String = "modkit.commonSourceSet"
+    public const val COMMON_SOURCE_SET: String = "${MODKIT_PROPERTY_PREFIX}.commonSourceSet"
 
     /** Common source set used when [COMMON_SOURCE_SET] is left unset. */
     public const val DEFAULT_COMMON_SOURCE_SET: String = "main"
