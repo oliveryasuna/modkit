@@ -56,6 +56,15 @@ internal object ModelValidation : PluginFeature {
                 }
             }
         }
+
+        // If something brings a `check` task (the base plugin, the Java plugin,
+        // and so on), run validation as part of it. That is what stops a broken
+        // model from slipping through a normal build.
+        project.plugins.withType(LifecycleBasePlugin::class.java) {
+            project.tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) { check ->
+                check.dependsOn(validate)
+            }
+        }
     }
 
 }

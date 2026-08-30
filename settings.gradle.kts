@@ -24,6 +24,7 @@ includeBuild("build-logic")
 include("libraries:common")
 include("libraries:core-api")
 include("libraries:plugin-support")
+include("libraries:test-util")
 
 // Plugins
 include("plugins:core")

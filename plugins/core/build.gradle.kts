@@ -26,4 +26,6 @@ dependencies {
     api(project(":libraries:core-api"))
 
     implementation(project(":libraries:plugin-support"))
+
+    testImplementation(project(":libraries:test-util"))
 }

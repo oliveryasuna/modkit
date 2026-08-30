@@ -53,6 +53,8 @@ class BaseConventionsPlugin : Plugin<Project> {
         tasks.named<Test>("test") {
             useJUnitPlatform()
         }
+
+        applyCoverage()
     }
 
 }
