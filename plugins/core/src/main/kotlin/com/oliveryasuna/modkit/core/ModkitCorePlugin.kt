@@ -3,6 +3,7 @@ package com.oliveryasuna.modkit.core
 import com.oliveryasuna.modkit.core.ModkitCorePlugin.Companion.features
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.plugin.MODKIT_EXTENSION_NAME
+import com.oliveryasuna.modkit.plugin.PluginContext
 import com.oliveryasuna.modkit.plugin.PluginFeature
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -21,15 +22,16 @@ public class ModkitCorePlugin : Plugin<Project> {
 
     override fun apply(project: Project) {
         val model = project.extensions.create(MODKIT_EXTENSION_NAME, ModkitExtension::class.java)
+        val context = PluginContext(project, model)
 
-        features.forEach { it.install(project, model) }
+        features.forEach { it.install(context) }
     }
 
     private companion object {
 
         // Conventions go first, so the rest see the defaults; after that the
         // order doesn't matter.
-        val features: List<PluginFeature> = listOf(
+        val features: List<PluginFeature<PluginContext>> = listOf(
             ModelConventions,
             ModelReport,
             ModelValidation,

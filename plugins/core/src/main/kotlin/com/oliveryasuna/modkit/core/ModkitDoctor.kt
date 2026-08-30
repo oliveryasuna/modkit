@@ -2,10 +2,7 @@ package com.oliveryasuna.modkit.core
 
 import com.oliveryasuna.modkit.core.diagnostics.ModkitDiagnostics
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
-import com.oliveryasuna.modkit.plugin.MODKIT_TASK_GROUP
-import com.oliveryasuna.modkit.plugin.MODKIT_TASK_PREFIX
-import com.oliveryasuna.modkit.plugin.PluginFeature
-import com.oliveryasuna.modkit.plugin.modkitDiagnostics
+import com.oliveryasuna.modkit.plugin.*
 import org.gradle.api.Project
 
 private const val DOCTOR_TASK_NAME: String = "${MODKIT_TASK_PREFIX}Doctor"
@@ -19,17 +16,15 @@ private const val DOCTOR_TASK_NAME: String = "${MODKIT_TASK_PREFIX}Doctor"
  * "Model" section and the model-level problems. It only ever reports; a problem
  * is a warning, never a build failure.
  */
-internal object ModkitDoctor : PluginFeature {
+internal object ModkitDoctor : PluginFeature<PluginContext> {
 
     private const val MODEL_SECTION_TITLE: String = "Model"
 
-    override fun install(
-        project: Project,
-        model: ModkitExtension
-    ) {
+    override fun install(ctx: PluginContext) {
+        val project = ctx.project
         val diagnostics = project.modkitDiagnostics()
 
-        contributeModelSection(project, model, diagnostics)
+        contributeModelSection(project, ctx.model, diagnostics)
         registerDoctorTask(project, diagnostics)
     }
 

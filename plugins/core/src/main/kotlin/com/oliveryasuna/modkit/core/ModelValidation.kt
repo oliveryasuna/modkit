@@ -1,10 +1,9 @@
 package com.oliveryasuna.modkit.core
 
-import com.oliveryasuna.modkit.core.extension.ModkitExtension
 import com.oliveryasuna.modkit.plugin.MODKIT_TASK_PREFIX
+import com.oliveryasuna.modkit.plugin.PluginContext
 import com.oliveryasuna.modkit.plugin.PluginFeature
 import org.gradle.api.GradleException
-import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 private const val VALIDATE_TASK_NAME: String = "${MODKIT_TASK_PREFIX}ValidateModel"
@@ -17,16 +16,16 @@ private const val VALIDATE_TASK_NAME: String = "${MODKIT_TASK_PREFIX}ValidateMod
  * nothing about Gradle. All this feature does is snapshot the model into plain
  * values and decide what to do with whatever comes back.
  */
-internal object ModelValidation : PluginFeature {
+internal object ModelValidation : PluginFeature<PluginContext> {
 
     // Strict fails the build; lenient only warns. No public switch for now: a
     // broken model is a mistake worth stopping for.
     private const val STRICT: Boolean = true
 
-    override fun install(
-        project: Project,
-        model: ModkitExtension
-    ) {
+    override fun install(ctx: PluginContext) {
+        val project = ctx.project
+        val model = ctx.model
+
         val validate = project.tasks.register(VALIDATE_TASK_NAME) { task ->
             task.group = LifecycleBasePlugin.VERIFICATION_GROUP
             task.description = "Validates the resolved Modkit model (modId, targets, loaders)."

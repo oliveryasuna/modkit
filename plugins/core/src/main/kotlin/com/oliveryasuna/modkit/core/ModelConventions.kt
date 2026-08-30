@@ -2,6 +2,7 @@ package com.oliveryasuna.modkit.core
 
 import com.oliveryasuna.modkit.common.toolchain.JavaToolchainResolver
 import com.oliveryasuna.modkit.core.extension.ModkitExtension
+import com.oliveryasuna.modkit.plugin.PluginContext
 import com.oliveryasuna.modkit.plugin.PluginFeature
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
@@ -15,14 +16,11 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion
  * out the JVM toolchain from the Minecraft versions being targeted. Everything
  * here is a convention, so an explicit value in the build script always wins.
  */
-internal object ModelConventions : PluginFeature {
+internal object ModelConventions : PluginFeature<PluginContext> {
 
-    override fun install(
-        project: Project,
-        model: ModkitExtension
-    ) {
-        applyModelDefaults(project, model)
-        deriveToolchain(project, model)
+    override fun install(ctx: PluginContext) {
+        applyModelDefaults(ctx.project, ctx.model)
+        deriveToolchain(ctx.project, ctx.model)
     }
 
     private fun applyModelDefaults(
