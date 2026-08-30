@@ -14,6 +14,7 @@ dependencyResolutionManagement {
     }
 }
 
+// TODO: Actually take advantage of this feature.
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "modkit"
@@ -28,3 +29,4 @@ include("libraries:test-util")
 
 // Plugins
 include("plugins:core")
+include("plugins:loaders")

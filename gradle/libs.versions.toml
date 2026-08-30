@@ -9,6 +9,12 @@ kotlin = "2.3.21"
 plugin-publish = "2.1.1"
 vanniktech-maven-publish = "0.37.0"
 
+# Loader tooling
+loom = "1.17.13"
+moddevgradle = "2.0.141"
+access-widener = "2.1.0"
+accesstransformers = "13.0.3"
+
 # JUnit
 junit = "6.1.1"
 
@@ -25,6 +31,12 @@ kotlin-semver = "3.1.0"
 kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-publish-plugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "plugin-publish" }
 vanniktech-maven-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "vanniktech-maven-publish" }
+
+# Loader tooling
+fabric-loom = { module = "net.fabricmc:fabric-loom", version.ref = "loom" }
+moddev-gradle = { module = "net.neoforged:moddev-gradle", version.ref = "moddevgradle" }
+access-widener = { module = "net.fabricmc:access-widener", version.ref = "access-widener" }
+accesstransformers = { module = "net.neoforged:accesstransformers", version.ref = "accesstransformers" }
 
 # JUnit
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
