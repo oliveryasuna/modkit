@@ -29,4 +29,5 @@ public abstract class ModkitDiagnostics {
      * them.
      */
     public abstract val problems: ListProperty<String>
+
 }

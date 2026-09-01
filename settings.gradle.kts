@@ -11,6 +11,18 @@ dependencyResolutionManagement {
     repositories {
         gradlePluginPortal()
         mavenCentral()
+        // Loader tooling wrapped by :plugins:loaders. Scoped by group so they
+        // are only consulted for their own artifacts.
+        maven("https://maven.fabricmc.net/") {
+            content { includeGroupByRegex("net\\.fabricmc.*") }
+        }
+        maven("https://maven.neoforged.net/releases") {
+            content { includeGroupByRegex("net\\.neoforged.*") }
+        }
+        // Stonecutter (multi-version tooling) wrapped by :plugins:multiversion.
+        maven("https://maven.kikugie.dev/releases") {
+            content { includeGroupByRegex("dev\\.kikugie.*") }
+        }
     }
 }
 

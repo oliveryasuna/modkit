@@ -28,7 +28,7 @@ class BaseConventionsPlugin : Plugin<Project> {
         // tooling (e.g., `:plugins:loaders`) override `modkit.bytecodeTarget`,
         // since Loom and ModDevGradle require Java 21.
         val bytecodeTarget = findProperty("modkit.bytecodeTarget")?.toString()?.toInt()
-                             ?: libs.version("java-target").toInt()
+            ?: libs.version("java-target").toInt()
 
         configure<KotlinJvmProjectExtension> {
             jvmToolchain(toolchainVersion)

@@ -38,4 +38,4 @@ public fun Project.modkitDiagnostics(): ModkitDiagnostics =
  */
 internal inline fun <reified T : Any> Project.getOrCreateExtension(name: String): T =
     extensions.findByType(T::class.java)
-    ?: extensions.create(name, T::class.java)
+        ?: extensions.create(name, T::class.java)

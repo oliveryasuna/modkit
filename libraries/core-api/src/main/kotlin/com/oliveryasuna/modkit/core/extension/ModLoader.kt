@@ -31,7 +31,7 @@ public enum class ModLoader {
             }
 
             return entries.firstOrNull { it.name.equals(name, ignoreCase = true) }
-                   ?: throw IllegalArgumentException("Unknown '${PROPERTY}' value '${name}'; expected one of ${entries.joinToString { it.name.lowercase() }}.")
+                ?: throw IllegalArgumentException("Unknown '${PROPERTY}' value '${name}'; expected one of ${entries.joinToString { it.name.lowercase() }}.")
         }
 
     }

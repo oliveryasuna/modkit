@@ -26,7 +26,7 @@ public object JavaToolchainResolver {
         val version = minecraftVersion.toVersion(strict = false).withoutSuffixes()
 
         return floors.firstOrNull { (floor, _) -> version >= floor }?.second
-               ?: floors.last().second
+            ?: floors.last().second
     }
 
     // One JVM builds every loader of a target, so take the highest floor. No
