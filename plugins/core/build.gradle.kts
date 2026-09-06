@@ -22,10 +22,10 @@ gradlePlugin {
 }
 
 dependencies {
-    api(project(":libraries:common"))
-    api(project(":libraries:core-api"))
+    api(projects.libraries.common)
+    api(projects.libraries.coreApi)
 
-    implementation(project(":libraries:plugin-support"))
+    implementation(projects.libraries.pluginSupport)
 
-    testImplementation(project(":libraries:test-util"))
+    testImplementation(projects.libraries.testUtil)
 }

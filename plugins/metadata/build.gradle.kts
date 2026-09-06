@@ -22,10 +22,10 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation(project(":libraries:plugin-support"))
-    implementation(project(":libraries:common"))
+    implementation(projects.libraries.common)
+    implementation(projects.libraries.pluginSupport)
 
-    runtimeOnly(project(":plugins:core"))
+    runtimeOnly(projects.plugins.core)
 
     implementation(libs.kotlinSemver)
 

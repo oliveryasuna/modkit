@@ -5,5 +5,5 @@ plugins {
 dependencies {
     compileOnly(gradleApi())
 
-    api(project(":libraries:core-api"))
+    api(projects.libraries.coreApi)
 }

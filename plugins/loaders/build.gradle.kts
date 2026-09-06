@@ -22,10 +22,10 @@ gradlePlugin {
 }
 
 dependencies {
-    implementation(project(":libraries:common"))
-    implementation(project(":libraries:plugin-support"))
+    implementation(projects.libraries.common)
+    implementation(projects.libraries.pluginSupport)
 
-    runtimeOnly(project(":plugins:core"))
+    runtimeOnly(projects.plugins.core)
 
     // Wrapped loader tooling. Bundled so the active base can be applied by id
     // and configured via its typed extension; kept internal (no upstream types
