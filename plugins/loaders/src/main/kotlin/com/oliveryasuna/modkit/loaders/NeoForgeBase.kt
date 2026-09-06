@@ -60,7 +60,7 @@ internal object NeoForgeBase : LoaderBase {
         project.addParchmentRepository()
 
         val neoForge = project.extensions.getByType(NeoForgeExtension::class.java)
-        neoForge.setVersion(version)
+        neoForge.version = version
 
         // Register the mod against its common source set. MDG uses this to put
         // the mod's classes on the dev-run classpath; without it the mod is

@@ -21,9 +21,9 @@ internal object ActiveTarget {
         val name = loader.name.lowercase()
         val matching = model.targets.filter { it.enabled.get() && loader in it.loaders.get() }
 
-        require(matching.isNotEmpty()) { "modkit.laoder=${name} but no enabled target declares the ${name} loader." }
+        require(matching.isNotEmpty()) { "modkit.laoder=${name} but no enabled target declares the $name loader." }
         require(matching.size == 1) {
-            "loaders builds one variant per project, but ${matching.size} enabled targets declare ${name} " +
+            "loaders builds one variant per project, but ${matching.size} enabled targets declare $name " +
                     "(${matching.joinToString { it.minecraftVersion }}). Use multiversion, or declare just one."
         }
 

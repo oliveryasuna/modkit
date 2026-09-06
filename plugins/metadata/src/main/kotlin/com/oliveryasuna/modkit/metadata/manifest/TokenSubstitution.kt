@@ -55,7 +55,7 @@ internal object TokenSubstitution {
             val name = match.groupValues[1]
             when {
                 name !in tokens -> throw GradleException(
-                    "Unknown token '\${$name}' in mod metadata. Valid tokens: " +
+                    $$"Unknown token '${$$name}' in mod metadata. Valid tokens: " +
                             tokens.keys.joinToString { $$"${$$it}" } + ".",
                 )
 

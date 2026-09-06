@@ -33,7 +33,7 @@ internal object FabricBase : LoaderBase {
     override fun install(ctx: LoaderContext) {
         val project = ctx.project
 
-        project.pluginManager.apply(com.oliveryasuna.modkit.loaders.FabricBase.LOOM_PLUGIN_ID)
+        project.pluginManager.apply(LOOM_PLUGIN_ID)
         project.addParchmentRepository()
 
         val loom = project.extensions.getByType(LoomGradleExtensionAPI::class.java)
@@ -104,6 +104,7 @@ internal object FabricBase : LoaderBase {
                     if(parchment == null) {
                         loom.officialMojangMappings()
                     } else {
+                        // TODO: Ensure this stays.
                         loom.layered {
                             it.officialMojangMappings()
                             // Parchment data ships as a zip with no POM, so the

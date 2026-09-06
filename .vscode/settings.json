@@ -1,0 +1,49 @@
+{
+  //==================================================
+  // Java
+  //==================================================
+
+  "java.import.gradle.wrapper.enabled": true,
+  // "java.import.gradle.java.home": "",
+
+  "java.compile.nullAnalysis.mode": "automatic",
+
+  "java.gradle.buildServer.enabled": "on",
+
+  //==================================================
+  // Gradle
+  //==================================================
+
+  "gradle.nestedProjects": true,
+  "gradle.reuseTerminals": "task",
+  "gradle.javaDebug.cleanOutput": true,
+
+  //==================================================
+  // Files
+  //==================================================
+
+  "files.exclude": {
+    "**/.gradle": true,
+    "**/build": true
+  },
+  "files.watcherExclude": {
+    "**/.gradle/**": true,
+    "**/build/**": true
+  },
+
+  //==================================================
+  // Search
+  //==================================================
+
+  "search.exclude": {
+    "**/.gradle": true,
+    "**/build": true
+  },
+
+  //==================================================
+  // Extension: Java and Kotlin by IntelliJ IDEA
+  //==================================================
+
+  "intellij.buildTool": "gradle"
+
+}

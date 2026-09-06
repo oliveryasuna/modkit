@@ -266,7 +266,12 @@ gradle-app.setting
 # Modifications to above
 #==================================================
 
+# JetBrains
 .idea/
+
+# Gradle
+.kotlin/
+bin/
 
 #==================================================
 # Miscellaneous
