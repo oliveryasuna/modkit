@@ -46,6 +46,7 @@ public class ModkitLoadersPlugin : Plugin<Project> {
     private companion object {
 
         const val LOADERS_BLOCK: String = "loaders"
+
     }
 
 }

@@ -5,6 +5,7 @@ import com.oliveryasuna.modkit.core.extension.ModLoader
 import com.oliveryasuna.modkit.loaders.accesstransformer.GenerateAccessTransformerTask
 import com.oliveryasuna.modkit.loaders.extension.MappingsScheme
 import com.oliveryasuna.modkit.plugin.MODKIT_TASK_GROUP
+import com.oliveryasuna.modkit.plugin.sourceSets
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import org.gradle.api.GradleException
 import org.gradle.api.plugins.JavaPlugin
@@ -28,11 +29,11 @@ internal object NeoForgeBase : LoaderBase {
 
     private const val CLIENT_SOURCE_SET: String = "client"
 
-    override fun install(context: LoaderContext) {
-        val accessTransformer = registerAccessTransformerTask(context)
+    override fun install(ctx: LoaderContext) {
+        val accessTransformer = registerAccessTransformerTask(ctx)
 
-        context.project.afterEvaluate {
-            applyModDevGradle(context, accessTransformer)
+        ctx.project.afterEvaluate {
+            applyModDevGradle(ctx, accessTransformer)
         }
     }
 

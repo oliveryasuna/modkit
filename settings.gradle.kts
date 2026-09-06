@@ -42,3 +42,4 @@ include("libraries:test-util")
 // Plugins
 include("plugins:core")
 include("plugins:loaders")
+include("plugins:metadata")

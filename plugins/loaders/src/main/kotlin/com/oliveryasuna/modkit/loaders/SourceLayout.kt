@@ -2,6 +2,7 @@ package com.oliveryasuna.modkit.loaders
 
 import com.oliveryasuna.modkit.plugin.ModkitProperties
 import com.oliveryasuna.modkit.plugin.commonSourceSet
+import com.oliveryasuna.modkit.plugin.sourceSets
 import org.gradle.api.GradleException
 import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet

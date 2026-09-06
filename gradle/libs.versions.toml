@@ -1,3 +1,5 @@
+# TODO: Rename things like "kotlin-semver" to "kotlinSemver".
+
 [versions]
 
 # Toolchain
@@ -23,6 +25,7 @@ jacoco = "0.8.15"
 
 # Miscellaneous
 kotlin-semver = "3.1.0"
+nightconfig = "3.8.3"
 
 
 [libraries]
@@ -45,6 +48,8 @@ junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher
 
 # Miscellaneous
 kotlin-semver = { module = "io.github.z4kn4fein:semver", version.ref = "kotlin-semver" }
+nightconfig-json = { module = "com.electronwill.night-config:json", version.ref = "nightconfig" }
+nightconfig-toml = { module = "com.electronwill.night-config:toml", version.ref = "nightconfig" }
 
 
 [plugins]

@@ -45,7 +45,7 @@ public fun Project.activeLoader(): ModLoader? =
  * points at, or "main" if it points at nothing.
  */
 public fun Project.commonSourceSet(): String =
-    modkitProperty(ModkitProperties.COMMON_SOURCE_SET)
+    modkitProperty(COMMON_SOURCE_SET)
         ?: ModkitProperties.DEFAULT_COMMON_SOURCE_SET
 
 /**
