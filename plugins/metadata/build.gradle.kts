@@ -27,8 +27,7 @@ dependencies {
 
     runtimeOnly(project(":plugins:core"))
 
-    implementation(libs.kotlin.semver)
+    implementation(libs.kotlinSemver)
 
-    implementation(libs.nightconfig.json)
-    implementation(libs.nightconfig.toml)
+    implementation(libs.bundles.nightconfig.all)
 }

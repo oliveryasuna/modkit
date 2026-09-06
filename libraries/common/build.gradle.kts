@@ -3,5 +3,5 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.kotlin.semver)
+    implementation(libs.kotlinSemver)
 }

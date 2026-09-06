@@ -1,21 +1,13 @@
-# TODO: Rename things like "kotlin-semver" to "kotlinSemver".
-
 [versions]
 
 # Toolchain
 java = "21"
-java-target = "17"
+javaTarget = "17"
 kotlin = "2.3.21"
 
 # Build / publishing plugins
-plugin-publish = "2.1.1"
-vanniktech-maven-publish = "0.37.0"
-
-# Loader tooling
-loom = "1.17.13"
-moddevgradle = "2.0.141"
-access-widener = "2.1.0"
-accesstransformers = "13.0.3"
+pluginPublishPlugin = "2.1.1"
+gradleMavenPublishPlugin = "0.37.0"
 
 # JUnit
 junit = "6.1.1"
@@ -24,35 +16,47 @@ junit = "6.1.1"
 jacoco = "0.8.15"
 
 # Miscellaneous
-kotlin-semver = "3.1.0"
 nightconfig = "3.8.3"
 
+################################################################################
+################################################################################
 
 [libraries]
 
 # Plugins
-kotlin-gradle-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
-plugin-publish-plugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "plugin-publish" }
-vanniktech-maven-publish-plugin = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "vanniktech-maven-publish" }
+plugin-kotlinGradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+plugin-publishPlugin = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "pluginPublishPlugin" }
+plugin-vanniktechMavenPublish = { module = "com.vanniktech:gradle-maven-publish-plugin", version.ref = "gradleMavenPublishPlugin" }
 
 # Loader tooling
-fabric-loom = { module = "net.fabricmc:fabric-loom", version.ref = "loom" }
-moddev-gradle = { module = "net.neoforged:moddev-gradle", version.ref = "moddevgradle" }
-access-widener = { module = "net.fabricmc:access-widener", version.ref = "access-widener" }
-accesstransformers = { module = "net.neoforged:accesstransformers", version.ref = "accesstransformers" }
+fabricLoom = { module = "net.fabricmc:fabric-loom", version = "1.17.13" }
+moddevGradle = { module = "net.neoforged:moddev-gradle", version = "2.0.141" }
+accessWidener = { module = "net.fabricmc:access-widener", version = "2.1.0" }
+accesstransformers = { module = "net.neoforged:accesstransformers", version = "13.0.3" }
+
+# NightConfig
+nightconfig-json = { module = "com.electronwill.night-config:json", version.ref = "nightconfig" }
+nightconfig-toml = { module = "com.electronwill.night-config:toml", version.ref = "nightconfig" }
 
 # JUnit
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
-junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+junit-platformLauncher = { module = "org.junit.platform:junit-platform-launcher" }
 
 # Miscellaneous
-kotlin-semver = { module = "io.github.z4kn4fein:semver", version.ref = "kotlin-semver" }
-nightconfig-json = { module = "com.electronwill.night-config:json", version.ref = "nightconfig" }
-nightconfig-toml = { module = "com.electronwill.night-config:toml", version.ref = "nightconfig" }
+kotlinSemver = { module = "io.github.z4kn4fein:semver", version = "3.1.0" }
 
+################################################################################
+################################################################################
+
+[bundles]
+
+nightconfig-all = ["nightconfig-json", "nightconfig-toml"]
+
+################################################################################
+################################################################################
 
 [plugins]
 
-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-plugin-publish = { id = "com.gradle.plugin-publish", version.ref = "plugin-publish" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+pluginPublish = { id = "com.gradle.plugin-publish", version.ref = "pluginPublishPlugin" }

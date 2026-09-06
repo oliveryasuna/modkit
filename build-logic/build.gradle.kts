@@ -3,9 +3,9 @@ plugins {
 }
 
 dependencies {
-    implementation(libs.kotlin.gradle.plugin)
-    implementation(libs.plugin.publish.plugin)
-    implementation(libs.vanniktech.maven.publish.plugin)
+    implementation(libs.plugin.kotlinGradle)
+    implementation(libs.plugin.publishPlugin)
+    implementation(libs.plugin.vanniktechMavenPublish)
 }
 
 gradlePlugin {

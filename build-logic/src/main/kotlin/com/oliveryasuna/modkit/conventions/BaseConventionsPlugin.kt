@@ -28,7 +28,7 @@ class BaseConventionsPlugin : Plugin<Project> {
         // tooling (e.g., `:plugins:loaders`) override `modkit.bytecodeTarget`,
         // since Loom and ModDevGradle require Java 21.
         val bytecodeTarget = findProperty("modkit.bytecodeTarget")?.toString()?.toInt()
-            ?: libs.version("java-target").toInt()
+            ?: libs.version("javaTarget").toInt()
 
         configure<KotlinJvmProjectExtension> {
             jvmToolchain(toolchainVersion)
@@ -47,7 +47,7 @@ class BaseConventionsPlugin : Plugin<Project> {
         dependencies {
             "testImplementation"(platform(libs.library("junit-bom").get()))
             "testImplementation"(libs.library("junit-jupiter").get())
-            "testRuntimeOnly"(libs.library("junit-platform-launcher").get())
+            "testRuntimeOnly"(libs.library("junit-platformLauncher").get())
         }
 
         tasks.named<Test>("test") {

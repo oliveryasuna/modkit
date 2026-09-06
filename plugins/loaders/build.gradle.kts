@@ -30,10 +30,10 @@ dependencies {
     // Wrapped loader tooling. Bundled so the active base can be applied by id
     // and configured via its typed extension; kept internal (no upstream types
     // in loaders' public API). Only the base for `modkit.loader` is applied.
-    implementation(libs.fabric.loom)
-    implementation(libs.moddev.gradle)
+    implementation(libs.fabricLoom)
+    implementation(libs.moddevGradle)
 
     // AW->AT transpiler libraries (parse Fabric AW / model NeoForge AT).
-    implementation(libs.access.widener)
+    implementation(libs.accessWidener)
     implementation(libs.accesstransformers)
 }
