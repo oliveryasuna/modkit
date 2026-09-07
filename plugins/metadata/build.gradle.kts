@@ -30,4 +30,6 @@ dependencies {
     implementation(libs.kotlinSemver)
 
     implementation(libs.bundles.nightconfig.all)
+
+    testImplementation(projects.libraries.testUtil)
 }

@@ -35,6 +35,10 @@ public abstract class FunctionalTestBase {
         return runner
     }
 
+    protected fun resolve(relative: String): File {
+        return projectDir.resolve(relative)
+    }
+
     /**
      * The plugin code we test runs in the forked TestKit daemon, not in this
      * JVM, so that is where the JaCoCo agent needs to be. When coverage is on,
