@@ -33,7 +33,7 @@ internal fun MavenPom.modkitMetadata(project: Project) {
 
     licenses {
         license {
-            name.set(project.providers.gradleProperty("modkit.pom.licenseName").getOrElse("All Rights Reserved"))
+            name.set(project.providers.gradleProperty("modkit.pom.licenseName").getOrElse("Apache-2.0"))
             url.set(
                 project.providers.gradleProperty("modkit.pom.licenseUrl").getOrElse("$MODKIT_URL/blob/main/LICENSE")
             )
