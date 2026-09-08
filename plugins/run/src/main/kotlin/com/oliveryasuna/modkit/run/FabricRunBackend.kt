@@ -2,6 +2,8 @@ package com.oliveryasuna.modkit.run
 
 import com.oliveryasuna.modkit.run.mapping.RunConfigValues
 import com.oliveryasuna.modkit.run.mapping.mapRunConfigToLoom
+import com.oliveryasuna.modkit.run.mapping.mergeVariant
+import com.oliveryasuna.modkit.run.mapping.snapshot
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.configuration.ide.RunConfigSettings
 import org.gradle.api.Project
@@ -18,7 +20,28 @@ import org.gradle.api.Project
 internal object FabricRunBackend : RunBackend {
 
     override fun configure(ctx: RunContext) {
-        TODO("Not yet implemented")
+        val project = ctx.project
+        val loom = project.extensions.getByType(LoomGradleExtensionAPI::class.java)
+
+        project.afterEvaluate {
+            val run = ctx.run
+
+            createRun(project, loom, "client", RunKind.CLIENT, run.client.snapshot())
+            createRun(project, loom, "server", RunKind.SERVER, run.server.snapshot())
+            if(run.data.enabled.getOrElse(false)) warnUnsupported(project, "data")
+            if(run.gametest.enabled.getOrElse(false)) warnUnsupported(project, "gametest")
+
+            ctx.forEachVariantRun { variant, kind, runName ->
+                val values = run.runByKind(kind).snapshot().mergeVariant(
+                    gameDir = variant.gameDir.get(),
+                    jvmArgs = variant.jvmArgs.getOrElse(emptyList()),
+                    programArgs = variant.programArgs.getOrElse(emptyList()),
+                    systemProperties = variant.systemProperties.getOrElse(emptyMap()),
+                    environment = variant.environment.getOrElse(emptyMap()),
+                )
+                createRun(project, loom, runName, kind, values)
+            }
+        }
     }
 
     /**
