@@ -6,6 +6,7 @@ dependencies {
     implementation(libs.plugin.kotlinGradle)
     implementation(libs.plugin.publishPlugin)
     implementation(libs.plugin.vanniktechMavenPublish)
+    implementation(libs.plugin.spotless)
 }
 
 gradlePlugin {

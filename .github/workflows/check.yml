@@ -1,0 +1,80 @@
+name: check.yml
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+concurrency:
+  group: check-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Java
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Check
+        run: ./gradlew check
+
+      # Resolve the CDN redirect first so the cache key is tied to the exact
+      # archive. Without this, `latest` silently changes and the cache either
+      # never invalidates or never hits.
+      - id: idea-url
+        name: Resolve IntelliJ URL
+        run: |
+          url="$(curl -fsSLI -o /dev/null -w '%{url_effective}' \
+            'https://download.jetbrains.com/product?code=IIC&latest&distribution=linux')"
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "archive=$(basename "${url%%\?*}")" >> "$GITHUB_OUTPUT"
+
+      - id: idea-cache
+        name: Cache IntelliJ
+        uses: actions/cache@v6
+        with:
+          path: ${{ runner.temp }}/idea
+          key: idea-${{ runner.os }}-${{ steps.idea-url.outputs.archive }}
+
+      - name: Install IntelliJ
+        if: steps.idea-cache.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p "$RUNNER_TEMP/idea"
+          curl -fsSL -o "$RUNNER_TEMP/idea.tar.gz" '${{ steps.idea-url.outputs.url }}'
+          tar -xzf "$RUNNER_TEMP/idea.tar.gz" -C "$RUNNER_TEMP/idea" --strip-components=1
+          rm -f "$RUNNER_TEMP/idea.tar.gz"
+
+      # The Linux launcher is `idea.sh` in JetBrains' docs; newer builds also
+      # ship `bin/idea`. Pick whichever exists rather than assuming.
+      - id: idea
+        name: Resolve IDEA launcher
+        run: |
+          for candidate in "$RUNNER_TEMP/idea/bin/idea" "$RUNNER_TEMP/idea/bin/idea.sh"; do
+            if [ -x "$candidate" ]; then
+              echo "binary=$candidate" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "No IDEA launcher found in $RUNNER_TEMP/idea/bin" >&2
+          ls -l "$RUNNER_TEMP/idea/bin" >&2
+          exit 1
+
+      # Separate invocation: the `idea()` step shells out, so this run cannot
+      # use the configuration cache.
+      - name: Spotless
+        run: >
+          ./gradlew spotlessCheck
+          --no-configuration-cache
+          "-Pmodkit.ideaBinaryPath=${{ steps.idea.outputs.binary }}"

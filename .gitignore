@@ -267,7 +267,10 @@ gradle-app.setting
 #==================================================
 
 # JetBrains
-.idea/
+.idea/*
+!.idea/codeStyles/
+!.idea/codeStyles/codeStyleConfig.xml
+!.idea/codeStyles/Project.xml
 
 # Gradle
 .kotlin/
