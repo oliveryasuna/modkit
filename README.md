@@ -4,6 +4,10 @@ Modkit is a suite of Gradle plugins that simplifies the tooling for Minecraft mo
 
 **Status: beta.** Expect some churn before `1.0.0`. Found a bug or have feedback? [Open an issue](https://github.com/oliveryasuna/modkit/issues).
 
+## Contributing
+
+We are always looking for contributors! If you're interested in helping out, please check out our [contribution guidelines](./CONTRIBUTING.md).
+
 ## Plugins
 
 _Some plugins may not yet be implemented during the beta._
