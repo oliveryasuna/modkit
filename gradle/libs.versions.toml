@@ -3,7 +3,7 @@
 # Toolchain
 java = "21"
 javaTarget = "17"
-kotlin = "2.3.21"
+kotlin = "2.4.10"
 
 # Build / publishing plugins
 pluginPublishPlugin = "2.1.1"
@@ -13,13 +13,13 @@ gradleMavenPublishPlugin = "0.37.0"
 spotless = "8.10.2"
 
 # JUnit
-junit = "6.1.1"
+junit = "6.1.3"
 
 # Coverage
 jacoco = "0.8.15"
 
 # Miscellaneous
-nightconfig = "3.8.3"
+nightconfig = "3.9.0"
 
 ################################################################################
 ################################################################################
@@ -33,8 +33,8 @@ plugin-vanniktechMavenPublish = { module = "com.vanniktech:gradle-maven-publish-
 plugin-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 
 # Loader tooling
-fabricLoom = { module = "net.fabricmc:fabric-loom", version = "1.17.13" }
-moddevGradle = { module = "net.neoforged:moddev-gradle", version = "2.0.141" }
+fabricLoom = { module = "net.fabricmc:fabric-loom", version = "1.17.20" }
+moddevGradle = { module = "net.neoforged:moddev-gradle", version = "2.0.146" }
 accessWidener = { module = "net.fabricmc:access-widener", version = "2.1.0" }
 accesstransformers = { module = "net.neoforged:accesstransformers", version = "13.0.3" }
 
