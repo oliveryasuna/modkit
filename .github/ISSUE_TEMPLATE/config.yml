@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or help
+    url: https://github.com/oliveryasuna/modkit/discussions
+    about: Ask usage and how-to questions here rather than in the issue tracker.
+  - name: Report a security vulnerability
+    url: https://github.com/oliveryasuna/modkit/security/policy
+    about: Please report vulnerabilities privately, not as a public issue.

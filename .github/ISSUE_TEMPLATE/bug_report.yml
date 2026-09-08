@@ -1,0 +1,112 @@
+name: Bug report
+description: Something in a Modkit plugin behaves incorrectly.
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: >
+        Thanks for filing a bug. Build issues are hard to track down without
+        versions and a way to reproduce them, so please fill in the fields
+        below as completely as you can.
+  - type: input
+    id: modkit-version
+    attributes:
+      label: Modkit version
+      placeholder: e.g. 0.10.0
+    validations:
+      required: true
+  - type: dropdown
+    id: plugin
+    attributes:
+      label: Which plugin(s)
+      multiple: true
+      options:
+        - ci
+        - core
+        - datagen
+        - dependencies
+        - loaders
+        - metadata
+        - mixins
+        - multiversion
+        - publish
+        - run
+        - scaffold
+        - testing
+        - Not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: loader
+    attributes:
+      label: Mod loader
+      multiple: true
+      options:
+        - Fabric
+        - Forge
+        - NeoForge
+        - Quilt
+        - Not applicable
+    validations:
+      required: true
+  - type: input
+    id: mc-version
+    attributes:
+      label: Minecraft version(s)
+      description: Note whether you drive multiple versions through Stonecutter.
+      placeholder: e.g. 1.21.1, or 1.20.1 through 1.21.4 via Stonecutter
+    validations:
+      required: false
+  - type: input
+    id: gradle-version
+    attributes:
+      label: Gradle version
+      placeholder: e.g. 9.7.1
+    validations:
+      required: true
+  - type: input
+    id: jdk-version
+    attributes:
+      label: JDK version
+      placeholder: e.g. Temurin 21.0.4
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+      placeholder: e.g. macOS 15.0, Windows 11, Ubuntu 24.04
+    validations:
+      required: false
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      description: >
+        A minimal build that reproduces the issue is the fastest path to a fix.
+        Link a repository or paste the relevant build files.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Build output
+      description: >
+        Re-run with --stacktrace (and --info if it helps) and paste the output.
+        It renders as a code block, so no backticks are needed.
+      render: shell
+    validations:
+      required: false
