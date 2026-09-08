@@ -1,6 +1,9 @@
-name: check.yml
+name: Check
 
 on:
+  push:
+    branches:
+      - main
   pull_request:
     types:
       - opened
@@ -8,8 +11,13 @@ on:
       - reopened
 
 concurrency:
-  group: check-${{ github.event.pull_request.number }}
-  cancel-in-progress: true
+  # PRs group by number; pushes fall back to the ref (e.g. refs/heads/main).
+  # Without the fallback, every push shares an empty group and cancels the
+  # others.
+  group: check-${{ github.event.pull_request.number || github.ref }}
+  # Cancel superseded PR runs, but let every push to main finish so each
+  # commit keeps its own recorded status.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
