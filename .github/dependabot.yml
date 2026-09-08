@@ -1,0 +1,31 @@
+version: 2
+updates:
+  # Gradle dependencies, including the version catalog at
+  # gradle/libs.versions.toml. build-logic shares that catalog, so it is
+  # covered here too.
+  - package-ecosystem: gradle
+    directory: /
+    schedule:
+      interval: weekly
+    # Bundle minor and patch bumps into one PR per week to cut noise. Major
+    # bumps still arrive as their own PRs so they get a closer look.
+    groups:
+      gradle-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # GitHub Actions used by the workflows in .github/workflows.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    groups:
+      actions-minor-patch:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
