@@ -28,4 +28,6 @@ dependencies {
 
     implementation(libs.fabricLoom)
     implementation(libs.moddevGradle)
+
+    testImplementation(projects.libraries.testUtil)
 }
