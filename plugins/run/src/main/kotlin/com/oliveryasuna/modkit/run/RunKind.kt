@@ -49,3 +49,15 @@ internal fun RunSpec.runByKind(kind: RunKind): RunConfig =
         RunKind.DATA -> data
         RunKind.GAMETEST -> gametest
     }
+
+/**
+ * The four fixed runs paired with their names, in a stable order. Used by
+ * reporting.
+ */
+internal fun fixedRuns(run: RunSpec): List<Pair<String, RunConfig>> =
+    listOf(
+        "client" to run.client,
+        "server" to run.server,
+        "data" to run.data,
+        "gametest" to run.gametest,
+    )

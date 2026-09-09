@@ -17,7 +17,7 @@ internal object LoaderRuns : PluginFeature<RunContext> {
     override fun install(ctx: RunContext) {
         val plugins = ctx.project.pluginManager
         plugins.withPlugin(FABRIC_LOOM_ID) { FabricRunBackend.configure(ctx) }
-        // TODO: NeoForge backend.
+        plugins.withPlugin(NEOFORGE_MODDEV_ID) { NeoForgeRunBackend.configure(ctx) }
     }
 
 }
