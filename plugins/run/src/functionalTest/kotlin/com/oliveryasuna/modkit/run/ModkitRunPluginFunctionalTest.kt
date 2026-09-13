@@ -60,7 +60,7 @@ class ModkitRunPluginFunctionalTest : FunctionalTestBase() {
             """
             run {
                 client {
-                    gameDir.set("run/dev")
+                    gameDir("run/dev")
                     jvmArgs.add("-Xmx4G")
                     programArgs.add("--width=1280")
                     systemProperties.put("mixin.debug", "true")
@@ -89,7 +89,7 @@ class ModkitRunPluginFunctionalTest : FunctionalTestBase() {
             run {
                 data {
                     enabled.set(true)
-                    gameDir.set("run/gen")
+                    gameDir("run/gen")
                 }
             }
             """.trimIndent()
