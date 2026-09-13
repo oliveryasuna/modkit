@@ -3,6 +3,8 @@ package com.oliveryasuna.modkit.run.extension
 import org.gradle.api.Named
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.provider.*
 import javax.inject.Inject
 
@@ -18,11 +20,12 @@ import javax.inject.Inject
 public abstract class RunVariant @Inject constructor(
     private val variantName: String,
     private val siblings: NamedDomainObjectContainer<RunVariant>,
-    private val providers: ProviderFactory
+    private val providers: ProviderFactory,
+    private val layout: ProjectLayout
 ) : Named {
 
     /** Working directory for this variant's runs. Default `run/<name>`. */
-    public abstract val gameDir: Property<String>
+    public abstract val gameDir: DirectoryProperty
 
     /** Whether this variant's runs are configured. Default `true`. */
     public abstract val enabled: Property<Boolean>
@@ -87,6 +90,12 @@ public abstract class RunVariant @Inject constructor(
      * (`client`/`server`/`data`/`gametest`).
      */
     public fun appliesTo(vararg runKinds: String): Unit = appliesToRuns.addAll(*runKinds)
+
+    /**
+     * Sets [gameDir] from a path resolved against the project directory, e.g.,
+     * `gameDir("run/compat")`.
+     */
+    public fun gameDir(path: String): Unit = gameDir.set(layout.projectDirectory.dir(path))
 
     override fun getName(): String = variantName
 }

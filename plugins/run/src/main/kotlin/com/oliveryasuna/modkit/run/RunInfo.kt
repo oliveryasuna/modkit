@@ -6,6 +6,7 @@ import com.oliveryasuna.modkit.plugin.PluginFeature
 import com.oliveryasuna.modkit.run.extension.RunSpec
 import com.oliveryasuna.modkit.run.mapping.snapshot
 import com.oliveryasuna.modkit.run.task.ModkitRunInfoTask
+import org.gradle.api.file.Directory
 
 /**
  * Registers `modkitRunInfo`, which prints the resolved runs and reports
@@ -20,15 +21,21 @@ internal object RunInfo : PluginFeature<RunContext> {
         context.project.tasks.register(TASK_NAME, ModkitRunInfoTask::class.java) { task ->
             task.group = MODKIT_TASK_GROUP
             task.description = "Prints the resolved run configurations and reports hot-swap (JBR/DCEVM) status."
-            task.runSummaries.set(context.project.provider { summarize(context.run) })
+            task.runSummaries.set(
+                context.project.provider { summarize(context.run, context.project.layout.projectDirectory) },
+            )
             task.preferJetBrainsRuntime.set(context.run.hotswap.preferJetBrainsRuntime)
         }
     }
 
-    private fun summarize(run: RunSpec): List<String> =
+    private fun summarize(
+        run: RunSpec,
+        projectDir: Directory
+    ): List<String> =
         fixedRuns(run).map { (name, config) ->
             val values = config.snapshot()
-            "$name: enabled=${values.enabled} gameDir=${values.gameDir} " +
+            val gameDir = config.gameDir.get().relativeToProject(projectDir)
+            "$name: enabled=${values.enabled} gameDir=$gameDir " +
                     "jvmArgs=${values.jvmArgs} programArgs=${values.programArgs} " +
                     "systemProperties=${values.systemProperties} environment=${values.environment} auth=${values.auth}"
         }

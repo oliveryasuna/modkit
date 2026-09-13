@@ -1,8 +1,11 @@
 package com.oliveryasuna.modkit.run.extension
 
+import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.file.ProjectLayout
 import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.MapProperty
 import org.gradle.api.provider.Property
+import javax.inject.Inject
 
 /**
  * One unified run configuration.
@@ -10,10 +13,12 @@ import org.gradle.api.provider.Property
  * It is a superset of what any single loader can do; anything the active loader
  * cannot express is logged and skipped, rather than failing the build.
  */
-public abstract class RunConfig {
+public abstract class RunConfig @Inject constructor(
+    private val layout: ProjectLayout
+) {
 
-    /** Working directory for the run, relative to the project. */
-    public abstract val gameDir: Property<String>
+    /** Working directory for the run. Defaults under `run/`, in the project. */
+    public abstract val gameDir: DirectoryProperty
 
     /** Extra JVM arguments. */
     public abstract val jvmArgs: ListProperty<String>
@@ -39,5 +44,11 @@ public abstract class RunConfig {
 
     /** Whether this run is configured on the active loader. */
     public abstract val enabled: Property<Boolean>
+
+    /**
+     * Sets [gameDir] from a path resolved against the project directory, e.g.,
+     * `gameDir("run/dev")`.
+     */
+    public fun gameDir(path: String): Unit = gameDir.set(layout.projectDirectory.dir(path))
 
 }

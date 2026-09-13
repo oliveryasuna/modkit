@@ -3,7 +3,6 @@ package com.oliveryasuna.modkit.run
 import com.oliveryasuna.modkit.run.extension.RunConfig
 import net.neoforged.moddevgradle.dsl.NeoForgeExtension
 import net.neoforged.moddevgradle.dsl.RunModel
-import org.gradle.api.Project
 import org.gradle.api.file.Directory
 import org.gradle.api.provider.Provider
 
@@ -22,10 +21,10 @@ internal object NeoForgeRunBackend : RunBackend {
         val neoForge = project.extensions.getByType(NeoForgeExtension::class.java)
         val run = ctx.run
 
-        fixedRun(project, neoForge, "client", RunKind.CLIENT, run.client)
-        fixedRun(project, neoForge, "server", RunKind.SERVER, run.server)
-        fixedRun(project, neoForge, "data", RunKind.DATA, run.data)
-        fixedRun(project, neoForge, "gametest", RunKind.GAMETEST, run.gametest)
+        fixedRun(neoForge, "client", RunKind.CLIENT, run.client)
+        fixedRun(neoForge, "server", RunKind.SERVER, run.server)
+        fixedRun(neoForge, "data", RunKind.DATA, run.data)
+        fixedRun(neoForge, "gametest", RunKind.GAMETEST, run.gametest)
 
         ctx.forEachVariantRun { variant, kind, runName ->
             val model = writeRun(
@@ -33,7 +32,7 @@ internal object NeoForgeRunBackend : RunBackend {
                 runName = runName,
                 kind = kind,
                 base = run.runByKind(kind),
-                gameDir = variant.gameDir.map { project.layout.projectDirectory.dir(it) },
+                gameDir = variant.gameDir,
                 ideName = "${kind.ideName} (${variant.name})",
             )
             // Layer the variant's extras over the base: lists append, maps
@@ -47,7 +46,6 @@ internal object NeoForgeRunBackend : RunBackend {
     }
 
     private fun fixedRun(
-        project: Project,
         neoForge: NeoForgeExtension,
         name: String,
         kind: RunKind,
@@ -59,7 +57,7 @@ internal object NeoForgeRunBackend : RunBackend {
             runName = name,
             kind = kind,
             base = config,
-            gameDir = config.gameDir.map { project.layout.projectDirectory.dir(it) },
+            gameDir = config.gameDir,
             ideName = kind.ideName,
         )
     }

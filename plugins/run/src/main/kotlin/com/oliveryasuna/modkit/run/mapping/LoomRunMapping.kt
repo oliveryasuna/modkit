@@ -2,10 +2,10 @@ package com.oliveryasuna.modkit.run.mapping
 
 /**
  * The concrete arguments a Fabric Loom run should get, plus warnings for
- * anything the unified config asked for that Loom cannot express (dropped, not fatal).
+ * anything the unified config asked for that Loom cannot express (dropped, not
+ * fatal).
  */
 internal data class LoomRunMapping(
-    val runDir: String,
     val vmArgs: List<String>,
     val programArgs: List<String>,
     val warnings: List<String>,
@@ -40,7 +40,6 @@ internal fun mapRunConfigToLoom(
     }
 
     return LoomRunMapping(
-        runDir = values.gameDir,
         vmArgs = vmArgs,
         programArgs = values.programArgs,
         warnings = warnings,
