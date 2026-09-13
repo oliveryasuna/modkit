@@ -75,8 +75,8 @@ internal object FabricRunBackend : RunBackend {
         val settings = loom.runs.maybeCreate(name)
         setSide(settings)
         settings.runDirectory.set(gameDir)
-        if(mapping.vmArgs.isNotEmpty()) settings.vmArgs(mapping.vmArgs)
-        if(mapping.programArgs.isNotEmpty()) settings.programArgs(mapping.programArgs)
+        settings.jvmArguments.addAll(mapping.vmArgs)
+        settings.programArguments.addAll(mapping.programArgs)
     }
 
     private fun warnUnsupported(
