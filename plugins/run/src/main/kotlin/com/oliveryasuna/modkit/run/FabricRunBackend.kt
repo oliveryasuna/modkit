@@ -7,6 +7,8 @@ import com.oliveryasuna.modkit.run.mapping.snapshot
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.configuration.ide.RunConfigSettings
 import org.gradle.api.Project
+import org.gradle.api.file.Directory
+import org.gradle.api.provider.Provider
 
 /**
  * Fabric Loom backend.
@@ -26,20 +28,19 @@ internal object FabricRunBackend : RunBackend {
         project.afterEvaluate {
             val run = ctx.run
 
-            createRun(project, loom, "client", RunKind.CLIENT, run.client.snapshot())
-            createRun(project, loom, "server", RunKind.SERVER, run.server.snapshot())
+            createRun(project, loom, "client", RunKind.CLIENT, run.client.snapshot(), run.client.gameDir)
+            createRun(project, loom, "server", RunKind.SERVER, run.server.snapshot(), run.server.gameDir)
             if(run.data.enabled.getOrElse(false)) warnUnsupported(project, "data")
             if(run.gametest.enabled.getOrElse(false)) warnUnsupported(project, "gametest")
 
             ctx.forEachVariantRun { variant, kind, runName ->
                 val values = run.runByKind(kind).snapshot().mergeVariant(
-                    gameDir = variant.gameDir.get(),
                     jvmArgs = variant.jvmArgs.getOrElse(emptyList()),
                     programArgs = variant.programArgs.getOrElse(emptyList()),
                     systemProperties = variant.systemProperties.getOrElse(emptyMap()),
                     environment = variant.environment.getOrElse(emptyMap()),
                 )
-                createRun(project, loom, runName, kind, values)
+                createRun(project, loom, runName, kind, values, variant.gameDir)
             }
         }
     }
@@ -54,7 +55,8 @@ internal object FabricRunBackend : RunBackend {
         loom: LoomGradleExtensionAPI,
         name: String,
         kind: RunKind,
-        values: RunConfigValues
+        values: RunConfigValues,
+        gameDir: Provider<Directory>
     ) {
         if(!values.enabled) return
 
@@ -72,7 +74,7 @@ internal object FabricRunBackend : RunBackend {
 
         val settings = loom.runs.maybeCreate(name)
         setSide(settings)
-        settings.runDir(mapping.runDir)
+        settings.runDirectory.set(gameDir)
         if(mapping.vmArgs.isNotEmpty()) settings.vmArgs(mapping.vmArgs)
         if(mapping.programArgs.isNotEmpty()) settings.programArgs(mapping.programArgs)
     }

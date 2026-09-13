@@ -26,11 +26,6 @@ internal fun stageVariantMods(
     val capitalized = variant.name.replaceFirstChar { it.uppercaseChar() }
     val staging = stagingConfiguration(project, variant)
 
-    // Capture the ProjectLayout (a cache-serializable service), never
-    // `project`, for the `into` provider, or the Sync task would hold a Project
-    // reference and fail configuration-cache serialization.
-    val projectDir = project.layout.projectDirectory
-
     // Feed the Sync a lazy provider of the *resolved artifact files*, not the
     // configuration itself. Putting the Configuration (or an ArtifactView over
     // it) in the copy spec drags the Loom/loaders-populated repository handler
@@ -44,7 +39,7 @@ internal fun stageVariantMods(
         task.group = MODKIT_TASK_GROUP
         task.description = "Stages the '${variant.name}' variant's mods into its run mods/ directory."
         task.from(modJars)
-        task.into(variant.gameDir.map { projectDir.dir(it).dir("mods") })
+        task.into(variant.gameDir.dir("mods"))
     }
 }
 
