@@ -1,6 +1,6 @@
 # Modkit
 
-Modkit is a suite of Gradle plugins that simplifies the tooling for Minecraft mod development. You to describe your mod once, including its identity, target versions, dependencies, and metadata, and Modkit automatically generates builds for multiple loaders (such as Fabric and NeoForge) based on that single description.
+Modkit is a suite of Gradle plugins that simplifies the tooling for Minecraft mod development. You describe your mod once, including its identity, target versions, dependencies, and metadata, and Modkit automatically generates builds for multiple loaders (such as Fabric and NeoForge) based on that single description.
 
 **Status: beta.** Expect some churn before `1.0.0`. Found a bug or have feedback? [Open an issue](https://github.com/oliveryasuna/modkit/issues).
 
