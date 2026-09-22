@@ -30,7 +30,6 @@ dependencyResolutionManagement {
     }
 }
 
-// TODO: Actually take advantage of this feature.
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 rootProject.name = "modkit"
