@@ -11,6 +11,7 @@ permissions:
 
 jobs:
   dependency-submission:
+    if: ${{ !startsWith(github.head_ref, 'contributors-readme-action-') }}
     runs-on: ubuntu-24.04
     permissions:
       contents: write

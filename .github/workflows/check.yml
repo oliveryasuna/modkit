@@ -24,6 +24,7 @@ permissions:
 
 jobs:
   check:
+    if: ${{ !startsWith(github.head_ref, 'contributors-readme-action-') }}
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
