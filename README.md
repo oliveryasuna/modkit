@@ -27,6 +27,11 @@ _Some plugins may not yet be implemented during the beta._
 | `scaffold`     | Generates new projects that use Modkit.                                                                              |
 | `testing`      | Sets up JUnit and wires GameTest runs.                                                                               |
 
+## Contributors
+
+<!-- readme: contributors -start -->
+<!-- readme: contributors -end -->
+
 ## License
 
 Modkit is licensed under Apache 2.0. [Full license text](./LICENSE).
