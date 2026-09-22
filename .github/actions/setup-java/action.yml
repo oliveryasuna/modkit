@@ -1,0 +1,13 @@
+name: Setup Java
+description: >
+  Provisions the JDK every Modkit workflow builds against, so each one gets an
+  identical toolchain from a single definition.
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Java
+      uses: actions/setup-java@v6
+      with:
+        distribution: temurin
+        java-version: 21

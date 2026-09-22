@@ -1,0 +1,33 @@
+name: Spotless Check
+description: >
+  Runs spotlessCheck against the IntelliJ IDEA formatter. The idea() step shells
+  out, so this runs without the configuration cache, in its own invocation.
+
+inputs:
+  idea-binary:
+    description: Path to the IntelliJ IDEA binary Spotless formats with.
+    required: true
+  os:
+    description: Runner OS.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    # Linux/macOS
+    - name: Spotless
+      if: inputs.os != 'Windows'
+      shell: bash
+      run: >
+        ./gradlew spotlessCheck
+        --no-configuration-cache
+        "-Pmodkit.ideaBinaryPath=${{ inputs.idea-binary }}"
+
+    # Windows
+    - name: Spotless
+      if: inputs.os == 'Windows'
+      shell: cmd
+      run: >
+        gradlew.bat spotlessCheck
+        --no-configuration-cache
+        "-Pmodkit.ideaBinaryPath=${{ inputs.idea-binary }}"
