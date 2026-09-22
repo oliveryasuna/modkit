@@ -29,6 +29,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # Verify the committed gradle-wrapper.jar against Gradle's published
+      # checksums before running it, so a tampered wrapper never executes.
+      - name: Validate wrapper
+        uses: gradle/actions/wrapper-validation@v6
+
       - name: Setup Java
         uses: actions/setup-java@v6
         with:
