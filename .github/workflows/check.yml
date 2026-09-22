@@ -35,10 +35,7 @@ jobs:
         uses: gradle/actions/wrapper-validation@v6
 
       - name: Setup Java
-        uses: actions/setup-java@v6
-        with:
-          distribution: temurin
-          java-version: 21
+        uses: ./.github/actions/setup-java
 
       - name: Check
         run: ./gradlew check
@@ -47,10 +44,8 @@ jobs:
         name: Setup IntelliJ IDEA
         uses: oliveryasuna/setup-idea@v1
 
-      # Separate invocation: the `idea()` step shells out, so this run cannot
-      # use the configuration cache.
       - name: Spotless
-        run: >
-          ./gradlew spotlessCheck
-          --no-configuration-cache
-          "-Pmodkit.ideaBinaryPath=${{ steps.idea.outputs.binary }}"
+        uses: ./.github/actions/spotless-check
+        with:
+          idea-binary: ${{ steps.idea.outputs.binary }}
+          os: ${{ runner.os }}
