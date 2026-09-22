@@ -30,6 +30,19 @@ _Some plugins may not yet be implemented during the beta._
 ## Contributors
 
 <!-- readme: contributors -start -->
+<table>
+	<tbody>
+		<tr>
+            <td align="center">
+                <a href="https://github.com/oliveryasuna">
+                    <img src="https://avatars.githubusercontent.com/u/17092333?v=4" width="100;" alt="oliveryasuna"/>
+                    <br />
+                    <sub><b>Oliver Yasuna</b></sub>
+                </a>
+            </td>
+		</tr>
+	<tbody>
+</table>
 <!-- readme: contributors -end -->
 
 ## License
