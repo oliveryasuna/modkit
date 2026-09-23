@@ -5,6 +5,7 @@ import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.*
 import org.gradle.testing.jacoco.plugins.JacocoPluginExtension
+import org.gradle.testing.jacoco.plugins.JacocoTaskExtension
 import org.gradle.testing.jacoco.tasks.JacocoReport
 
 /**
@@ -31,7 +32,7 @@ internal fun Project.applyCoverage() {
 
         // Source and class dirs are the same no matter which suite ran, so set
         // them once here. Suites only contribute execution data.
-        sourceDirectories.from(main.allSource.srcDirs)
+        sourceDirectories.from(main.allSource.sourceDirectories)
         classDirectories.from(main.output)
 
         reports {
@@ -51,15 +52,19 @@ internal fun Project.applyCoverage() {
 /**
  * Adds a test task's execution data to `coverageReport`.
  *
- * We pass the task to the `executionData(Task)` overload, which picks up the
- * task's JaCoCo destination file. It handles a missing file, so the report
- * still works if the suite never ran.
+ * The exec file comes from the task's JaCoCo extension, read through a
+ * provider so the test task isn't configured just because the report is.
+ * The mapped file doesn't carry the task dependency, so we add it ourselves.
+ * `JacocoReport` skips exec files that don't exist, so the report still works
+ * if the suite never ran.
  */
 internal fun Project.addCoverageFrom(testTaskName: String) {
     val testTask = tasks.named<Test>(testTaskName)
 
     tasks.named<JacocoReport>("coverageReport") {
-        executionData(testTask.get())
+        executionData.from(
+            testTask.map { it.extensions.getByType<JacocoTaskExtension>().destinationFile!! }
+        )
         dependsOn(testTask)
     }
 }
