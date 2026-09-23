@@ -4,8 +4,13 @@ export default defineRailway(() => {
   const web = service(
     'web',
     {
-      source: github('oliveryasuna/modkit', {checkSuites: true}),
-      domains: ['modkitmc.com'],
+      source: github(
+        'oliveryasuna/modkit',
+        {
+          branch: '23-move-docs-into-this-repo',
+          checkSuites: false
+        }
+      ),
       replicas: {'us-east4-eqdc4a': 1},
       build: {
         builder: 'RAILPACK',
