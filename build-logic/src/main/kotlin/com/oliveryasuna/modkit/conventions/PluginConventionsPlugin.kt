@@ -22,7 +22,6 @@ class PluginConventionsPlugin : Plugin<Project> {
     override fun apply(project: Project): Unit = project.run {
         apply<BaseConventionsPlugin>()
         pluginManager.apply("java-gradle-plugin")
-        pluginManager.apply("maven-publish")
         pluginManager.apply("com.gradle.plugin-publish")
 
         val functionalTest = the<SourceSetContainer>().create("functionalTest")
