@@ -1,0 +1,83 @@
+@use 'sass:list';
+
+/* Show the footer on pages that have a sidebar (default theme hides it). */
+.VPFooter.VPFooter.has-sidebar {
+    display: block !important;
+}
+
+/*
+  Home feature cards: lay the icon to the left of the title/details. An image
+  icon renders as bare .VPImage children of .box (no .icon wrapper); a
+  light/dark pair renders two, one hidden per theme.
+*/
+.VPFeature .box:has(> .VPImage) {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 16px;
+    align-items: start;
+
+    > .VPImage {
+        grid-column: 1;
+        grid-row: 1;
+        margin-bottom: 0;
+    }
+
+    > .title,
+    > .details,
+    > .link-text {
+        grid-column: 2;
+    }
+
+    /* Center the title against the taller icon. */
+    > .title {
+        align-self: center;
+    }
+}
+
+/*
+  Social link icons (nav bar + mobile menu), colored per link. Each icon is a
+  <span class="vpi-social-*">, so :has() selects its link. Color drives the icon
+  fill; the doubled class out-specifies VitePress's scoped .VPSocialLink rule.
+
+  GitHub is monochrome and tracks the theme's primary text color; the rest use
+  their brand colors.
+*/
+$social-links: (
+    'github': (var(--vp-c-text-2), var(--vp-c-text-1)),
+    'modrinth': (#1bd96a, #17b959),
+    'curseforge': (#f16436, #d9542a),
+    'discord': (#5865f2, #4752c4),
+);
+
+@each $name, $colors in $social-links {
+    .VPSocialLink.VPSocialLink:has(.vpi-social-#{$name}) {
+        color: list.nth($colors, 1);
+
+        &:hover {
+            color: list.nth($colors, 2);
+        }
+    }
+}
+
+/* Nav bar logo: rounded corners. */
+.VPNavBarTitle .logo {
+    border-radius: 8px;
+}
+
+/* Theme-aware images: pair a .light-only and .dark-only element. */
+html.dark .light-only {
+    display: none;
+}
+
+html:not(.dark) .dark-only {
+    display: none;
+}
+
+/* Modkit landing banner. */
+.modkit-banner {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}

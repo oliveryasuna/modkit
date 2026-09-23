@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "../global.d.ts",
+    "./src/**/*.ts",
+    "./src/.vitepress/**/*.ts",
+    "./src/.vitepress/theme/**/*.vue"
+  ],
+  "compilerOptions": {
+    //==================================================
+    // Language and environment
+    //==================================================
+
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ]
+  }
+}

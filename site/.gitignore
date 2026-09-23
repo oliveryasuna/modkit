@@ -1,0 +1,19 @@
+#==================================================
+# VitePress
+#==================================================
+
+/src/.vitepress/*
+!/src/.vitepress/config.ts
+!/src/.vitepress/theme/
+/src/.vitepress/theme/*
+!/src/.vitepress/theme/custom.scss
+!/src/.vitepress/theme/gradle-dsl.ts
+!/src/.vitepress/theme/index.ts
+!/src/.vitepress/theme/NotFound.vue
+!/src/.vitepress/theme/PreReleaseNotice.vue
+
+#==================================================
+# Output
+#==================================================
+
+dist/
