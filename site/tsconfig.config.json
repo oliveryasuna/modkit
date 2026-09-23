@@ -2,7 +2,8 @@
   "extends": "./tsconfig.json",
   "include": [
     "../global.d.ts",
-    "./*.ts"
+    "./*.ts",
+    "./.railway/**/*.ts"
   ],
   "compilerOptions": {
     //==================================================

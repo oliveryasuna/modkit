@@ -1,0 +1,27 @@
+import {defineRailway, github, project, service} from 'railway/iac';
+
+export default defineRailway(() => {
+  const web = service(
+    'web',
+    {
+      source: github('oliveryasuna/modkit', {checkSuites: true}),
+      domains: ['modkitmc.com'],
+      replicas: {'us-east4-eqdc4a': 1},
+      build: {
+        builder: 'RAILPACK',
+        buildCommand: 'bun run --filter "@modkit/site" build',
+        watchPatterns: [
+          'site/.railway/**/*',
+          'site/src/**/*',
+          'bun.lock'
+        ]
+      },
+      env: {RAILPACK_SPA_OUTPUT_DIR: 'site/dist'}
+    }
+  );
+
+  return project(
+    'docs',
+    {resources: [web]}
+  );
+});
