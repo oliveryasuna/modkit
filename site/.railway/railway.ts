@@ -14,7 +14,7 @@ export default defineRailway(() => {
       replicas: {'us-east4-eqdc4a': 1},
       build: {
         builder: 'RAILPACK',
-        buildCommand: 'bun run --filter "@modkit/site" build',
+        buildCommand: 'bunx --no-install run --filter "@modkit/site" build',
         watchPatterns: [
           'site/.railway/**/*',
           'site/src/**/*',
