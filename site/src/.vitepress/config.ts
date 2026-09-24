@@ -14,7 +14,10 @@ export default defineConfig({
   // markdown: {lineNumbers: true},
 
   themeConfig: {
-    logo: '/modkit-logo-dark.svg',
+    logo: {
+      light: '/modkit-logo-light.svg',
+      dark: '/modkit-logo-dark.svg'
+    },
 
     notFound: {quote: 'The page you were looking for fell into lava. It\'s contents could not be recovered.'},
 
