@@ -1,0 +1,47 @@
+name: Site
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/site.yml
+      - site/**/*
+      - bun.lock
+      - package.json
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    paths:
+      - site/**/*
+      - bun.lock
+      - package.json
+      - .github/workflows/site.yml
+
+concurrency:
+  group: site-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: read
+
+jobs:
+  site:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      - name: Lint
+        run: bun run --filter "@modkit/site" lint
+
+      - name: Build
+        run: bun run --filter "@modkit/site" build
