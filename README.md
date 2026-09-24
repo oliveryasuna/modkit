@@ -1,5 +1,9 @@
 # Modkit
 
+<a href="https://modkitmc.com/"><img alt="ghpages" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy/documentation/ghpages_vector.svg"></a>
+<a href="https://discord.com/invite/WzcXYYbcr7"><img alt="discord-singular" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy-minimal/social/discord-singular_vector.svg"></a>
+<a href="https://github.com/sponsors/oliveryasuna"><img alt="kofi-plural" height="56" src="https://cdn.jsdelivr.net/npm/@intergrav/devins-badges@3/assets/cozy-minimal/donate/kofi-plural_vector.svg"></a>
+
 Modkit is a suite of Gradle plugins that simplifies the tooling for Minecraft mod development. You describe your mod once, including its identity, target versions, dependencies, and metadata, and Modkit automatically generates builds for multiple loaders (such as Fabric and NeoForge) based on that single description.
 
 **Status: beta.** Expect some churn before `1.0.0`. Found a bug or have feedback? [Open an issue](https://github.com/oliveryasuna/modkit/issues).
